@@ -418,7 +418,7 @@ GameObject:
   - component: {fileID: 646593291}
   - component: {fileID: 646593290}
   m_Layer: 0
-  m_Name: Eye (1)
+  m_Name: RightPupil
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -433,7 +433,7 @@ Transform:
   m_GameObject: {fileID: 646593288}
   serializedVersion: 2
   m_LocalRotation: {x: -0.30274388, y: -0, z: -0, w: 0.95307195}
-  m_LocalPosition: {x: 0.148, y: 0.759, z: 0.408}
+  m_LocalPosition: {x: 0.154, y: 0.759, z: 0.408}
   m_LocalScale: {x: 0.02, y: 0.03, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -575,7 +575,7 @@ GameObject:
   - component: {fileID: 834070221}
   - component: {fileID: 834070220}
   m_Layer: 0
-  m_Name: Eye
+  m_Name: LeftEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -752,7 +752,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 851221425}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.079144575, y: -0, z: -0, w: 0.9968631}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -763,7 +763,7 @@ Transform:
   - {fileID: 646593289}
   - {fileID: 2028244013}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 9.079, y: 0, z: 0}
 --- !u!114 &851221430
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -790,6 +790,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveSpeed: 7
+  _gravity: 0
+  _jumpPower: 10
 --- !u!143 &851221432
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1044,7 +1046,7 @@ GameObject:
   - component: {fileID: 1391317619}
   - component: {fileID: 1391317618}
   m_Layer: 0
-  m_Name: Eye
+  m_Name: RightEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1261,7 +1263,7 @@ GameObject:
   - component: {fileID: 2028244015}
   - component: {fileID: 2028244014}
   m_Layer: 0
-  m_Name: Eye (2)
+  m_Name: LeftPupil
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

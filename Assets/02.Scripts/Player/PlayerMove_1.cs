@@ -15,10 +15,10 @@ public class PlayerMove_1 : MonoBehaviour
     }
     public MoveConfig _config;
 
-
     private CharacterController _controller;
     private PlayerStats _stats;
     private float _yVelocity = 0f;
+    private int _jumpCount = 0;
 
     private void Awake()
     {
@@ -28,27 +28,52 @@ public class PlayerMove_1 : MonoBehaviour
 
     private void Update()
     {
-        _yVelocity += _config.Gravity * Time.deltaTime;
-
+        ApplyGravity();
+        MoveAction();
+        JumpAction();
+    }
+    private void JumpAction()
+    {
+        if (_controller.isGrounded)
+        {
+            _jumpCount = 0;
+        }
+        if (Input.GetButtonDown("Jump"))
+        {
+            if (_jumpCount == 0 && _controller.isGrounded)
+            {
+                _yVelocity = _stats.JumpPower.Value;
+                _jumpCount = 1;
+            }
+            else if (_jumpCount == 1 && _stats.Stamina.TryConsume(_config.JumpStamina))
+            {
+                _yVelocity = _stats.JumpPower.Value;
+                _jumpCount = 2;
+            }
+        }
+    }
+    private void MoveAction()
+    {
         float x = Input.GetAxis("Horizontal");
         float y = Input.GetAxis("Vertical");
 
         Vector3 direction = new Vector3(x, 0, y);
         direction.Normalize();
-
-        if (Input.GetButtonDown("Jump") && _controller.isGrounded)
-        {
-            _yVelocity = _stats.JumpPower.Value;
-        }
+        bool isMoving = direction.magnitude > 0.1f ? true : false;
 
         direction = Camera.main.transform.TransformDirection(direction);
         direction.y = _yVelocity; // 중력 적용
 
         float moveSpeed = _stats.MoveSpeed.Value;
-        if (Input.GetKey(KeyCode.LeftShift) && _stats.Stamina.TryConsume(_config.RunStamina * Time.deltaTime))
+        if (Input.GetKey(KeyCode.LeftShift) && isMoving && _stats.Stamina.TryConsume(_config.RunStamina * Time.deltaTime))
         {
             moveSpeed = _stats.SprintSpeed.Value;
         }
         _controller.Move(direction * moveSpeed * Time.deltaTime);
+    }
+
+    private void ApplyGravity()
+    {
+        _yVelocity += _config.Gravity * Time.deltaTime;
     }
 }

@@ -28,7 +28,6 @@ public class CameraFollow : MonoBehaviour
                 .AppendCallback(() => _isChanging = false)
                 .SetAutoKill(true);
         }
-
         CameraView();
     }
 

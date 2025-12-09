@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 // 키보드를 누르면 캐릭터를 그 방향으로 이동 시키고 싶다
-public class PlayerMove : MonoBehaviour
+public class PlayerMove_2 : MonoBehaviour
 {
     // 필요 속성
     // - 이동속도
@@ -108,10 +108,10 @@ public class PlayerMove : MonoBehaviour
 
         if (!_isSprinting && (Time.time - _lastStaminaUseTime) >= _gainStaminaDelay)
         {
-            RegenerateStamina(_gainStaminaAmount * Time.deltaTime);
+            RegainStamina(_gainStaminaAmount * Time.deltaTime);
         }
     }
-    private void RegenerateStamina(float amount)
+    private void RegainStamina(float amount)
     {
         _currentStamina = Mathf.Min(_maxStamina, _currentStamina + amount);
     }

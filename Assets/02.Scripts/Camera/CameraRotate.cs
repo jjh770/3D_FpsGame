@@ -23,7 +23,6 @@ public class CameraRotate : MonoBehaviour
         // 1. 마우스 입력 받기
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
-        Debug.Log($"{mouseX}, {mouseY}");
 
         // 2. 마우스 입력을 누적한 방향을 구한다..
         _accumulationx += mouseX * RotationSpeed * Time.deltaTime;

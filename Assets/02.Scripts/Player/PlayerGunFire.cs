@@ -26,21 +26,24 @@ public class PlayerGunFire : MonoBehaviour
 
                 // 파티클생성과 플레이 방식
                 // 1. Instantiate 방식 (+ 풀링) -> 새로 생성(메모리, CPU 측면으로는 좋음)
+                // -> 한 화면에 여러가지 수정 후 여러 개 그릴 경우
+
                 // ParticleSystem hitEffect = Instantiate(_hitEffectPrefab, hitInfo.point, Quaternion.identity);
 
+
                 // 2. 하나를 캐싱해두고 Play    -> 단점 : 재실행이므로 기존 Play 중인 파티클 삭제 (Hierachy에 두기)
-                // Play방식은 이미 같은 파티클을 Play하면 이전에 Play중인 파티클은 사라짐
+                // 인스펙터 설정 그대로 그릴 경우 (내부적으로는 Emit과 동일함)
+
                 // hitInfo에는 point이라는 정보를 제공함 -> point는 부딫힌 위치 반환
-                // _hitEffectVFX.transform.position = hitInfo.point;
+                _hitEffectVFX.transform.position = hitInfo.point;
                 // hitInfo에는 normal이라는 정보를 제공함 -> normal은 법선벡터(부딫히면 튕겨져 나오는 방향)
-                // _hitEffectVFX.transform.forward = hitInfo.normal;
-                // _hitEffectVFX.Play();
+                _hitEffectVFX.transform.forward = hitInfo.normal;
+                _hitEffectVFX.Play();
 
                 // 3. 하나를 캐싱해두고 Emit
-                ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
-                emitParams.position = hitInfo.point;
-                emitParams.rotation3D = Quaternion.LookRotation(hitInfo.normal).eulerAngles;
-                _hitEffectVFX.Emit(emitParams, 1);
+                // 인스펙터 설정을 수정 후 그릴 경우 (transform을 제외한 다른 설정을 바꾸고 싶을 때 emitParams 세팅)
+                // 파티클 시스템 local vs world
+                // 빌보드란?
             }
         }
     }

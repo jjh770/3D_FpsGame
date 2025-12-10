@@ -1,16 +1,32 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class PlayerGunFire : MonoBehaviour
 {
     // 마우스의 왼쪽 버튼을 누르면 바라보는 방향으로 총을 발사하고 싶다. (총을 발사하고 싶다)
     [SerializeField] private Transform _fireTransform;
     [SerializeField] private ParticleSystem _hitEffectVFX;
+    [SerializeField] private WeaponStats _weaponStats;
+
+    private float _reloadTime = 1.6f;
+    private bool _isReloading = false;
+
+    private float _coolDown = 0.1f;
+    private float _timer = 1f;
 
     private void Update()
     {
+        _timer += Time.deltaTime;
+
         // 1. 마우스 왼쪽 버튼이 눌린다면
         if (Input.GetMouseButton(0))
         {
+            if (_timer < _coolDown || _isReloading) return;
+
+            _timer = 0f;
+
+            if (!TryShoot()) return;
+
             // 2. Ray를 생성하고 [발사할 위치], [방향], [거리(생략가능)]를 설정한다 (쏜다.)
             Ray ray = new Ray(_fireTransform.position, Camera.main.transform.forward);
 
@@ -46,5 +62,44 @@ public class PlayerGunFire : MonoBehaviour
                 // 빌보드란?
             }
         }
+        if (Input.GetKeyDown(KeyCode.R) && !_isReloading)
+        {
+            StartCoroutine(ReloadBullet());
+        }
+    }
+
+    private bool TryShoot()
+    {
+        if (_weaponStats.BulletCount.IsEmpty())
+        {
+            StartCoroutine(ReloadBullet());
+            return false;
+        }
+        else
+        {
+            _weaponStats.BulletCount.TryConsume();
+            return true;
+        }
+
+    }
+    private IEnumerator ReloadBullet()
+    {
+        if (_isReloading || _weaponStats.BulletClipCount.IsEmpty() || _weaponStats.BulletCount.IsFull()) yield break;
+
+        _isReloading = true;
+
+        yield return new WaitForSeconds(_reloadTime);
+
+        int currentBullet = _weaponStats.BulletCount.CurrentCount;
+        int maxBullet = _weaponStats.BulletCount.MaxCount;
+        int reserveBullet = _weaponStats.BulletClipCount.CurrentCount;
+
+        int bulletNeeded = maxBullet - currentBullet;
+        int bulletToReload = Mathf.Min(bulletNeeded, reserveBullet);
+
+        _weaponStats.BulletCount.Add(bulletToReload);
+        _weaponStats.BulletClipCount.TryConsume(bulletToReload);
+
+        _isReloading = false;
     }
 }

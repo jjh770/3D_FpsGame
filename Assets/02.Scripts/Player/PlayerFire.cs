@@ -11,19 +11,15 @@ public class PlayerFire : MonoBehaviour
     [SerializeField] private Transform _fireTransform;
     [SerializeField] private Bomb _bombPrefab;
     [SerializeField] private float _throwPower = 15f;
-    private PlayerStats _stats;
+    [SerializeField] private WeaponStats _weaponStats;
 
-    private void Awake()
-    {
-        _stats = GetComponent<PlayerStats>();
-    }
     private void Update()
     {
         if (Input.GetMouseButtonDown(1))
         {
-            if (_stats.BombCount.IsEmpty()) return;
+            if (_weaponStats.BombCount.IsEmpty()) return;
 
-            _stats.BombCount.TryConsume();
+            _weaponStats.BombCount.TryConsume();
             GameObject bomb = ObjectPool.Instance.Spawn(_bombPrefab.gameObject, _fireTransform.position, Quaternion.identity);
             Rigidbody bombRigidbody = bomb.GetComponent<Rigidbody>();
             bombRigidbody.AddForce(Camera.main.transform.forward * _throwPower, ForceMode.Impulse);

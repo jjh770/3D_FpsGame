@@ -17,7 +17,6 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private ValueStat _sprintSpeed;
     [SerializeField] private ValueStat _jumpPower;
 
-    [SerializeField] private ResourceStat _bombCount;
 
     public ConsumableStat Stamina => _stamina;
     public ConsumableStat Health => _health;
@@ -25,14 +24,12 @@ public class PlayerStats : MonoBehaviour
     public ValueStat MoveSpeed => _moveSpeed;
     public ValueStat SprintSpeed => _sprintSpeed;
     public ValueStat JumpPower => _jumpPower;
-    public ResourceStat BombCount => _bombCount;
 
     // 스태미나, 체력 관련 코드 (회복, 소모, 업그레이드)
     private void Start()
     {
         _health.Initialize();
         _stamina.Initialize();
-        _bombCount.Initialize();
     }
 
     private void Update()

@@ -1,25 +1,26 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
+[Serializable]
 // 무기의 '스탯'을 관리하는 컴포넌트
-public class WeaponStats : MonoBehaviour
+public class WeaponStats
 {
-    [SerializeField] private ResourceStat _bullet;
+    [SerializeField] private Sprite _spriteIcon;
+    [SerializeField] private ResourceStat _bulletCount;
     [SerializeField] private ResourceStat _bulletClipCount;
-    [SerializeField] private ResourceStat _bombCount;
     [SerializeField] private float _reloadTime = 1.6f;
     [SerializeField] private float _coolTime = 0.1f;
 
-    public ResourceStat BulletCount => _bullet;
+    public Sprite SpriteIcon => _spriteIcon;
+    public ResourceStat BulletCount => _bulletCount;
     public ResourceStat BulletClipCount => _bulletClipCount;
-    public ResourceStat BombCount => _bombCount;
     public float ReloadTime => _reloadTime;
     public float CoolTime => _coolTime;
     public bool IsReloading { get; set; }
 
-    private void Start()
+    public void Initialize()
     {
-        _bullet.Initialize();
+        _bulletCount.Initialize();
         _bulletClipCount.Initialize();
-        _bombCount.Initialize();
     }
 }

@@ -3,11 +3,19 @@ using UnityEngine.UI;
 
 public class UI_BombStats : MonoBehaviour
 {
-    [SerializeField] private WeaponStats _weaponStats;
     [SerializeField] private Text _bombCountText;
 
-    private void Update()
+    private void OnEnable()
     {
-        _bombCountText.text = _weaponStats.BombCount.CurrentCount.ToString();
+        WeaponEvents.OnConsumableChanged += OnConsumableChanged;
+    }
+    private void OnDisable()
+    {
+        WeaponEvents.OnConsumableChanged -= OnConsumableChanged;
+    }
+
+    private void OnConsumableChanged(int current)
+    {
+        _bombCountText.text = current.ToString();
     }
 }

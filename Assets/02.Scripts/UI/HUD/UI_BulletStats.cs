@@ -3,13 +3,36 @@ using UnityEngine.UI;
 
 public class UI_BulletStats : MonoBehaviour
 {
-    [SerializeField] private WeaponStats _weaponStats;
     [SerializeField] private Text _bulletCountText;
     [SerializeField] private Text _bulletClipCountText;
+    [SerializeField] private Image _bulletIcon;
 
-    private void Update()
+    private void OnEnable()
     {
-        _bulletCountText.text = _weaponStats.BulletCount.CurrentCount.ToString();
-        _bulletClipCountText.text = _weaponStats.BulletClipCount.CurrentCount.ToString();
+        WeaponEvents.OnAmmoChanged += OnAmmoChanged;
+        WeaponEvents.OnReload += OnReload;
+        WeaponEvents.OnChangeWeapon += OnChangeIcon;
+    }
+
+    private void OnDisable()
+    {
+        WeaponEvents.OnAmmoChanged -= OnAmmoChanged;
+        WeaponEvents.OnReload -= OnReload;
+    }
+
+    private void OnAmmoChanged(int currentBullet, int reserveBullet)
+    {
+        _bulletCountText.text = currentBullet.ToString();
+        _bulletClipCountText.text = reserveBullet.ToString();
+    }
+
+    private void OnChangeIcon(Sprite bulletIcon)
+    {
+        _bulletIcon.sprite = bulletIcon;
+    }
+
+    private void OnReload(float reloadTime)
+    {
+
     }
 }

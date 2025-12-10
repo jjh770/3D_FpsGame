@@ -1,37 +1,55 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-// 무기의 동작을 정의하는 컴포넌트
-public class WeaponController : MonoBehaviour
+// 무기의 동작을 정의하는 컴포넌트 (총)
+public class Weapon_Rifle : MonoBehaviour, IWeapon
 {
     [SerializeField] private WeaponStats _weaponStats;
     [SerializeField] private Transform _fireTransform;
     [SerializeField] private ParticleSystem _hitEffectVFX;
 
     private float _timer = 0;
+    private Coroutine _reloadCoroutine;
+
     private void Awake()
     {
-        _weaponStats = GetComponent<WeaponStats>();
+        _weaponStats.Initialize();
     }
-
+    private void Start()
+    {
+        BulletUIChange();
+    }
+    private void OnEnable()
+    {
+        BulletUIChange();
+    }
+    private void OnDisable()
+    {
+        // 무기 비활성화 시 재장전 취소
+        if (_reloadCoroutine != null)
+        {
+            StopCoroutine(_reloadCoroutine);
+            _reloadCoroutine = null;
+        }
+        _weaponStats.IsReloading = false;
+    }
     private void Update()
     {
         _timer += Time.deltaTime;
+
+        if (_weaponStats.BulletCount.IsEmpty() && !_weaponStats.IsReloading)
+        {
+            TryReload();
+        }
     }
     public void TryShoot()
     {
         if (_timer < _weaponStats.CoolTime) return;
-
         if (_weaponStats.IsReloading) return;
-
-
-        if (_weaponStats.BulletCount.IsEmpty())
-        {
-            TryReload();
-            return;
-        }
+        if (_weaponStats.BulletCount.IsEmpty()) return;
 
         _weaponStats.BulletCount.TryConsume();
+        BulletUIChange();
         Fire();
         _timer = 0f;
     }
@@ -41,13 +59,18 @@ public class WeaponController : MonoBehaviour
         if (_weaponStats.IsReloading || _weaponStats.BulletClipCount.IsEmpty() || _weaponStats.BulletCount.IsFull())
             return;
 
-        StartCoroutine(ReloadBullet());
+        _reloadCoroutine = StartCoroutine(ReloadBullet());
+    }
+
+    public Sprite GetIcon()
+    {
+        return _weaponStats.SpriteIcon;
     }
 
     private IEnumerator ReloadBullet()
     {
         _weaponStats.IsReloading = true;
-
+        WeaponEvents.TriggerReload(_weaponStats.ReloadTime);
         yield return new WaitForSeconds(_weaponStats.ReloadTime);
 
         int currentBullet = _weaponStats.BulletCount.CurrentCount;
@@ -59,8 +82,10 @@ public class WeaponController : MonoBehaviour
 
         _weaponStats.BulletCount.Add(bulletToReload);
         _weaponStats.BulletClipCount.TryConsume(bulletToReload);
+        BulletUIChange();
 
         _weaponStats.IsReloading = false;
+        _reloadCoroutine = null;
     }
 
     private void Fire()
@@ -99,5 +124,9 @@ public class WeaponController : MonoBehaviour
             // 파티클 시스템 local vs world
             // 빌보드란?
         }
+    }
+    private void BulletUIChange()
+    {
+        WeaponEvents.TriggerAmmoChanged(_weaponStats.BulletCount.CurrentCount, _weaponStats.BulletClipCount.CurrentCount);
     }
 }

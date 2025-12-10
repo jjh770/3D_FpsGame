@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PlayerFire : MonoBehaviour
+public class PlayerBombFire : MonoBehaviour
 {
     // 마우스 오른쪽 버튼을 누르면 카메라(플레이어)가 바라보는 방향으로 폭탄을 던지고 싶음
 
@@ -11,18 +11,32 @@ public class PlayerFire : MonoBehaviour
     [SerializeField] private Transform _fireTransform;
     [SerializeField] private Bomb _bombPrefab;
     [SerializeField] private float _throwPower = 15f;
-    [SerializeField] private WeaponStats _weaponStats;
+    private PlayerBombs _playerBombs;
 
+    private void Awake()
+    {
+        _playerBombs = GetComponent<PlayerBombs>();
+    }
+    private void Start()
+    {
+        BombUIChange();
+    }
     private void Update()
     {
         if (Input.GetMouseButtonDown(1))
         {
-            if (_weaponStats.BombCount.IsEmpty()) return;
+            if (_playerBombs.BombCount.IsEmpty()) return;
 
-            _weaponStats.BombCount.TryConsume();
+            _playerBombs.BombCount.TryConsume();
+            BombUIChange();
             GameObject bomb = ObjectPool.Instance.Spawn(_bombPrefab.gameObject, _fireTransform.position, Quaternion.identity);
             Rigidbody bombRigidbody = bomb.GetComponent<Rigidbody>();
             bombRigidbody.AddForce(Camera.main.transform.forward * _throwPower, ForceMode.Impulse);
         }
+    }
+
+    private void BombUIChange()
+    {
+        WeaponEvents.TriggerConsumableChanged(_playerBombs.BombCount.CurrentCount);
     }
 }

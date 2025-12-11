@@ -134,6 +134,14 @@ public class Weapon : MonoBehaviour, IWeapon
             // hitInfo.normal: 법선벡터 (튕겨져 나오는 방향)
             _hitEffectVFX.transform.forward = hitInfo.normal;
             _hitEffectVFX.Play();
+
+            // hitInfo의 태그와 레이어 비교하지 않은 이유
+            // -> 어차피 Monster 컴포넌트를 가지고 와야하기 때문 (2번 일 안함)
+            Monster monster = hitInfo.collider.gameObject.GetComponent<Monster>();
+            if (monster != null)
+            {
+                monster.TakeDamage(_weaponData.Damage);
+            }
         }
     }
     private void TriggerRebound()

@@ -17,6 +17,7 @@ public class WeaponDataSO : ScriptableObject
     [SerializeField] private Sprite _spriteIcon;
 
     [Header("Fire Settings")]
+    [SerializeField] private float _damage = 10f;
     [SerializeField] private float _coolTime = 0.1f;
     [SerializeField] private float _reloadTime = 1.6f;
 
@@ -30,8 +31,9 @@ public class WeaponDataSO : ScriptableObject
     [SerializeField] private int _maxBulletCount = 30;
     [SerializeField] private int _maxBulletClipCount = 120;
 
-    public Sprite SpriteIcon => _spriteIcon;
     public FireMode FireMode => _fireMode;
+    public Sprite SpriteIcon => _spriteIcon;
+    public float Damage => _damage;
     public float CoolTime => _coolTime;
     public float ReloadTime => _reloadTime;
     public int MaxBulletCount => _maxBulletCount;

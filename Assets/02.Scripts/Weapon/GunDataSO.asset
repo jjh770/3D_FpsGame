@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _fireMode: 0
   _spriteIcon: {fileID: 21300000, guid: 5bbd5d3b2e24eca45b04abf9bb68f0f7, type: 3}
+  _damage: 2
   _coolTime: 0.3
   _reloadTime: 0.5
   _reboundAmount: 1

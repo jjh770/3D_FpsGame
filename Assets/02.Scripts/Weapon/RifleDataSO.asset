@@ -12,8 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ad40a6bfcbb9a545ba1a17a8d345014, type: 3}
   m_Name: RifleDataSO
   m_EditorClassIdentifier: 
+  _fireMode: 1
   _spriteIcon: {fileID: 21300000, guid: 7298b29ed0a17d049bacaab234a8726b, type: 3}
   _coolTime: 0.1
   _reloadTime: 1.6
+  _reboundAmount: 0.6
+  _reboundSpeed: 20
+  _reboundRecover: 3
+  _reboundRotation: {x: 5, y: 0.5}
   _maxBulletCount: 30
   _maxBulletClipCount: 120

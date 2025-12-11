@@ -41,4 +41,11 @@ public class WeaponDataSO : ScriptableObject
     public float ReboundSpeed => _reboundSpeed;
     public float ReboundRecover => _reboundRecover;
     public Vector2 ReboundRotation => _reboundRotation;
+
+    public Vector3 CalculateRebound()
+    {
+        float reboundX = _reboundRotation.x * _reboundAmount;
+        float reboundY = Random.Range(-_reboundRotation.y, _reboundRotation.y) * _reboundAmount;
+        return new Vector3(reboundX, reboundY, 0f);
+    }
 }

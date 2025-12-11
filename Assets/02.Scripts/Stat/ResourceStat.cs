@@ -10,6 +10,15 @@ public class ResourceStat
     public int MaxCount => _maxCount;
     public int CurrentCount => _currentCount;
 
+    // 기본 생성자 (기존 코드 호환용)
+    public ResourceStat() { }
+
+    // 새로운 생성자 추가
+    public ResourceStat(int maxCount)
+    {
+        _maxCount = maxCount;
+        _currentCount = maxCount;
+    }
     public void Initialize()
     {
         _currentCount = _maxCount;

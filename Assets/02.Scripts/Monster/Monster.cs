@@ -6,12 +6,25 @@ public class Monster : MonoBehaviour
     [SerializeField] private EMonsterState _state = EMonsterState.Idle;
     [SerializeField] private GameObject _player;
     [SerializeField] private CharacterController _controller;
+    [SerializeField] private ParticleSystem _attackEffectVFX;
+    [SerializeField] private Transform _attackTransform;
+
+    private Vector3 _initPosition;
+    private Player _playerComponent;
     private MonsterStats _stats;
     private float _timer = 0f;
-
+    private float _distance;
+    private float _distanceToInit;
+    private Vector3 _direction;
     private void Awake()
     {
         _stats = GetComponent<MonsterStats>();
+        _playerComponent = _player.GetComponent<Player>();
+        _initPosition = transform.position;
+    }
+    private void Start()
+    {
+        StartCoroutine(CheckDistance());
     }
     private void Update()
     {
@@ -44,8 +57,7 @@ public class Monster : MonoBehaviour
     {
         // 대기하는 상태
         // TODO : Idle 애니메이션
-        Debug.Log($"{_state}");
-        if (Vector3.Distance(transform.position, _player.transform.position) <= _stats.DetectDistance.Value)
+        if (_distance <= _stats.DetectDistance.Value)
         {
             _state = EMonsterState.Trace;
         }
@@ -53,32 +65,42 @@ public class Monster : MonoBehaviour
 
     private void Trace()
     {
-        Debug.Log($"{_state}");
-        float distance = Vector3.Distance(transform.position, _player.transform.position);
-
         // 플레이어를 쫓아가는 상태
         // TODO : Run 애니메이션
-        Vector3 direction = (_player.transform.position - transform.position).normalized;
-        _controller.Move(direction * _stats.MoveSpeed.Value * Time.deltaTime);
+        _controller.Move(_direction * _stats.MoveSpeed.Value * Time.deltaTime);
 
-        if (distance <= _stats.DetectDistance.Value)
+        if (_distance <= _stats.AttackDistance.Value)
         {
             _state = EMonsterState.Attack;
         }
 
+        if (_distance > _stats.DetectDistance.Value)
+        {
+            _state = EMonsterState.Comeback;
+        }
     }
 
     private void Comeback()
     {
+        if (_distanceToInit > 0.5f)
+        {
+            _controller.Move(_direction * _stats.MoveSpeed.Value * Time.deltaTime);
+        }
+        else
+        {
+            _state = EMonsterState.Idle;
+        }
 
+        if (_distance <= _stats.DetectDistance.Value)
+        {
+            _state = EMonsterState.Trace;
+        }
     }
 
     private void Attack()
     {
         // 플레이어를 공격하는 상태
-        Debug.Log($"{_state}");
-        float distance = Vector3.Distance(transform.position, _player.transform.position);
-        if (distance > _stats.AttackDistance.Value)
+        if (_distance > _stats.AttackDistance.Value)
         {
             _state = EMonsterState.Trace;
             return;
@@ -86,8 +108,7 @@ public class Monster : MonoBehaviour
 
         if (_timer < _stats.AttackCoolTime.Value) return;
         _timer = 0f;
-        // 2. 플레이어 공격하기
-        Debug.Log("공격");
+        StartCoroutine(Attack_Coroutine());
     }
 
     public bool TakeDamage(float damage)
@@ -96,8 +117,6 @@ public class Monster : MonoBehaviour
         {
             return false;
         }
-        Debug.Log(_stats.Health.Value);
-
         if (_stats.Health.TryConsume(damage))
         {
             _state = EMonsterState.Hit;
@@ -108,23 +127,47 @@ public class Monster : MonoBehaviour
             _state = EMonsterState.Death;
             StartCoroutine(Death_Coroutine());
         }
-        Debug.Log(_stats.Health.Value);
         return true;
+    }
+
+    private IEnumerator Attack_Coroutine()
+    {
+        _attackEffectVFX.transform.position = _attackTransform.position;
+        _attackEffectVFX.transform.rotation = Quaternion.LookRotation(_direction);
+        _attackEffectVFX.Play();
+        _playerComponent.TakeDamage(_stats.AttackDamage.Value);
+        yield return new WaitForSeconds(1f);
     }
 
     private IEnumerator Hit_Coroutine()
     {
         // TODO : Hit 애니메이션
-        Debug.Log($"{_state}");
-        yield return new WaitForSeconds(0.05f);
+        yield return new WaitForSeconds(0.2f);
         _state = EMonsterState.Idle;
     }
 
     private IEnumerator Death_Coroutine()
     {
         // TODO : Death 애니메이션
-        Debug.Log($"{_state}");
+        //gameObject.transform.
         yield return new WaitForSeconds(0.5f);
         Destroy(gameObject);
+    }
+
+    private IEnumerator CheckDistance()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(0.2f);
+
+            _distanceToInit = Vector3.Distance(transform.position, _initPosition);
+            _distance = Vector3.Distance(transform.position, _player.transform.position);
+            if (_state == EMonsterState.Comeback)
+            {
+                _direction = (_initPosition - transform.position).normalized;
+                continue;
+            }
+            _direction = (_player.transform.position - transform.position).normalized;
+        }
     }
 }

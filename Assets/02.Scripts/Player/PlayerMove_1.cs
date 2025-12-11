@@ -1,8 +1,6 @@
 ﻿using System;
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(PlayerStats))]
 // 키보드를 누르면 캐릭터를 그 방향으로 이동 시키고 싶다
 public class PlayerMove_1 : MonoBehaviour
 {

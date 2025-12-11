@@ -17,6 +17,13 @@ public class Monster : MonoBehaviour
     private float _distanceToInit;
     private Vector3 _direction;
     private float _checkDistanceInterval = 0.2f;
+
+    private Vector3 _knockbackVelocity;
+    // 최소 넉백 속도 (이거 안넘으면 넉백안됨)
+    [SerializeField] private float _minKnockbackVelocity = 0.1f;
+    // 넉백 감속 속도
+    [SerializeField] private float _knockbackDecay = 5f;
+
     private void Awake()
     {
         _stats = GetComponent<MonsterStats>();
@@ -26,7 +33,24 @@ public class Monster : MonoBehaviour
     {
         StartCoroutine(CheckDistance());
     }
+
     private void Update()
+    {
+        HandleKnockback();
+        HandleMonsterState();
+    }
+
+    private void HandleKnockback()
+    {
+        if (_knockbackVelocity.magnitude > _minKnockbackVelocity)
+        {
+            _controller.Move(_knockbackVelocity * Time.deltaTime);
+            // 점진적 감속.
+            _knockbackVelocity = Vector3.Lerp(_knockbackVelocity, Vector3.zero, _knockbackDecay * Time.deltaTime);
+        }
+    }
+
+    private void HandleMonsterState()
     {
         _timer += Time.deltaTime;
 
@@ -49,7 +73,6 @@ public class Monster : MonoBehaviour
                 break;
             case EMonsterState.Death:
                 break;
-
         }
     }
 
@@ -111,25 +134,6 @@ public class Monster : MonoBehaviour
         StartCoroutine(Attack_Coroutine());
     }
 
-    public bool TakeDamage(float damage)
-    {
-        if (_state == EMonsterState.Hit || _state == EMonsterState.Death)
-        {
-            return false;
-        }
-        if (_stats.Health.TryConsume(damage))
-        {
-            _state = EMonsterState.Hit;
-            StartCoroutine(Hit_Coroutine());
-        }
-        else
-        {
-            _state = EMonsterState.Death;
-            StartCoroutine(Death_Coroutine());
-        }
-        return true;
-    }
-
     private IEnumerator Attack_Coroutine()
     {
         _attackEffectVFX.transform.position = _attackTransform.position;
@@ -152,6 +156,30 @@ public class Monster : MonoBehaviour
         //gameObject.transform.
         yield return new WaitForSeconds(0.5f);
         Destroy(gameObject);
+    }
+
+    public bool TakeDamage(float damage)
+    {
+        if (_state == EMonsterState.Hit || _state == EMonsterState.Death)
+        {
+            return false;
+        }
+        if (_stats.Health.TryConsume(damage))
+        {
+            _state = EMonsterState.Hit;
+            StartCoroutine(Hit_Coroutine());
+        }
+        else
+        {
+            _state = EMonsterState.Death;
+            StartCoroutine(Death_Coroutine());
+        }
+        return true;
+    }
+
+    public void TakeKnockBack(Vector3 direction, float knockbackAmount)
+    {
+        _knockbackVelocity = direction.normalized * knockbackAmount;
     }
 
     private IEnumerator CheckDistance()

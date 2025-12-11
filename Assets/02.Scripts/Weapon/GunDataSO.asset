@@ -21,5 +21,6 @@ MonoBehaviour:
   _reboundSpeed: 15
   _reboundRecover: 8
   _reboundRotation: {x: 15, y: 1}
+  _knockbackAmount: 10
   _maxBulletCount: 6
   _maxBulletClipCount: 24

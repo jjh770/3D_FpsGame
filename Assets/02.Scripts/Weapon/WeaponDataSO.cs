@@ -26,6 +26,7 @@ public class WeaponDataSO : ScriptableObject
     [SerializeField] private float _reboundSpeed = 10f;
     [SerializeField] private float _reboundRecover = 10f;
     [SerializeField] private Vector2 _reboundRotation = new Vector2(-2f, 1f);
+    [SerializeField] private float _knockbackAmount = 10f;
 
     [Header("Ammo Capacity")]
     [SerializeField] private int _maxBulletCount = 30;
@@ -43,6 +44,7 @@ public class WeaponDataSO : ScriptableObject
     public float ReboundSpeed => _reboundSpeed;
     public float ReboundRecover => _reboundRecover;
     public Vector2 ReboundRotation => _reboundRotation;
+    public float KnockbackAmount => _knockbackAmount;
 
     public Vector3 CalculateRebound()
     {

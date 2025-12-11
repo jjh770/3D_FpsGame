@@ -17,6 +17,11 @@ public class Monster : MonoBehaviour
     private float _distanceToInit;
     private Vector3 _direction;
     private float _checkDistanceInterval = 0.2f;
+
+    private Vector3 _knockbackDirection;
+    private float _knockbackAmount;
+    private float _knockbackDecay = 5f;
+
     private void Awake()
     {
         _stats = GetComponent<MonsterStats>();
@@ -28,6 +33,13 @@ public class Monster : MonoBehaviour
     }
     private void Update()
     {
+        if (_knockbackDirection.magnitude > 0.1f)
+        {
+            _controller.Move(_knockbackDirection * Time.deltaTime);
+            // 점진적 감속
+            _knockbackDirection = Vector3.Lerp(_knockbackDirection, Vector3.zero, _knockbackDecay * Time.deltaTime);
+        }
+
         _timer += Time.deltaTime;
 
         // 몬스터의 상태에 따라 다른 행동을 한다. (다른 메서드를 호출한다.)
@@ -128,6 +140,11 @@ public class Monster : MonoBehaviour
             StartCoroutine(Death_Coroutine());
         }
         return true;
+    }
+
+    public void TakeKnockBack(Vector3 direction, float knockbackAmount)
+    {
+        _knockbackDirection = direction.normalized * knockbackAmount;
     }
 
     private IEnumerator Attack_Coroutine()

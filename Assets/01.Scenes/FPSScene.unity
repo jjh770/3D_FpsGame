@@ -3892,6 +3892,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _state: 0
   _player: {fileID: 851221425}
+  _playerComponent: {fileID: 851221438}
   _controller: {fileID: 2046690791}
   _attackEffectVFX: {fileID: 2107445927}
   _attackTransform: {fileID: 656689226}

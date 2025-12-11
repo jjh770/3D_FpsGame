@@ -141,6 +141,7 @@ public class Weapon : MonoBehaviour, IWeapon
             if (monster != null)
             {
                 monster.TakeDamage(_weaponData.Damage);
+                monster.TakeKnockBack(ray.direction, _weaponData.KnockbackAmount);
             }
         }
     }

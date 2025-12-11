@@ -5,21 +5,21 @@ public class Monster : MonoBehaviour
 {
     [SerializeField] private EMonsterState _state = EMonsterState.Idle;
     [SerializeField] private GameObject _player;
+    [SerializeField] private Player _playerComponent;
     [SerializeField] private CharacterController _controller;
     [SerializeField] private ParticleSystem _attackEffectVFX;
     [SerializeField] private Transform _attackTransform;
 
     private Vector3 _initPosition;
-    private Player _playerComponent;
     private MonsterStats _stats;
     private float _timer = 0f;
     private float _distance;
     private float _distanceToInit;
     private Vector3 _direction;
+    private float _checkDistanceInterval = 0.2f;
     private void Awake()
     {
         _stats = GetComponent<MonsterStats>();
-        _playerComponent = _player.GetComponent<Player>();
         _initPosition = transform.position;
     }
     private void Start()
@@ -158,7 +158,7 @@ public class Monster : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(_checkDistanceInterval);
 
             _distanceToInit = Vector3.Distance(transform.position, _initPosition);
             _distance = Vector3.Distance(transform.position, _player.transform.position);

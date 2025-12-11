@@ -18,8 +18,7 @@ public class Monster : MonoBehaviour
     private Vector3 _direction;
     private float _checkDistanceInterval = 0.2f;
 
-    private Vector3 _knockbackDirection;
-    private float _knockbackAmount;
+    private Vector3 _knockbackVelocity;
     private float _knockbackDecay = 5f;
 
     private void Awake()
@@ -33,11 +32,11 @@ public class Monster : MonoBehaviour
     }
     private void Update()
     {
-        if (_knockbackDirection.magnitude > 0.1f)
+        if (_knockbackVelocity.magnitude > 0.1f)
         {
-            _controller.Move(_knockbackDirection * Time.deltaTime);
+            _controller.Move(_knockbackVelocity * Time.deltaTime);
             // 점진적 감속
-            _knockbackDirection = Vector3.Lerp(_knockbackDirection, Vector3.zero, _knockbackDecay * Time.deltaTime);
+            _knockbackVelocity = Vector3.Lerp(_knockbackVelocity, Vector3.zero, _knockbackDecay * Time.deltaTime);
         }
 
         _timer += Time.deltaTime;
@@ -144,7 +143,7 @@ public class Monster : MonoBehaviour
 
     public void TakeKnockBack(Vector3 direction, float knockbackAmount)
     {
-        _knockbackDirection = direction.normalized * knockbackAmount;
+        _knockbackVelocity = direction.normalized * knockbackAmount;
     }
 
     private IEnumerator Attack_Coroutine()

@@ -20,6 +20,12 @@ public class WeaponDataSO : ScriptableObject
     [SerializeField] private float _coolTime = 0.1f;
     [SerializeField] private float _reloadTime = 1.6f;
 
+    [Header("Rebound")]
+    [SerializeField] private float _reboundAmount = 1f;
+    [SerializeField] private float _reboundSpeed = 10f;
+    [SerializeField] private float _reboundRecover = 10f;
+    [SerializeField] private Vector2 _reboundRotation = new Vector2(-2f, 1f);
+
     [Header("Ammo Capacity")]
     [SerializeField] private int _maxBulletCount = 30;
     [SerializeField] private int _maxBulletClipCount = 120;
@@ -30,4 +36,16 @@ public class WeaponDataSO : ScriptableObject
     public float ReloadTime => _reloadTime;
     public int MaxBulletCount => _maxBulletCount;
     public int MaxBulletClipCount => _maxBulletClipCount;
+
+    public float ReboundAmount => _reboundAmount;
+    public float ReboundSpeed => _reboundSpeed;
+    public float ReboundRecover => _reboundRecover;
+    public Vector2 ReboundRotation => _reboundRotation;
+
+    public Vector3 CalculateRebound()
+    {
+        float reboundX = _reboundRotation.x * _reboundAmount;
+        float reboundY = Random.Range(-_reboundRotation.y, _reboundRotation.y) * _reboundAmount;
+        return new Vector3(reboundX, reboundY, 0f);
+    }
 }

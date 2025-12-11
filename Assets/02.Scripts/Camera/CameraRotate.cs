@@ -7,37 +7,64 @@ public class CameraRotate : MonoBehaviour
     public float RotationSpeed = 200f; // 0 ~ 360;
 
     // 유니티는 0~360도 각도 체계이므로 우리가 따로 저장할 -360 ~ 360 체계로 누적할 변수
-    private float _accumulationx = 0;
+    private float _accumulationX = 0;
     private float _accumulationY = 0;
 
-    // 플레이 눌렀을 때 로딩하는 시간부터 Update는 이미 돌아가고 있음.
-    // 그래서 GetMouseButton을 넣어 마우스 위치에 따라 회전이 튀는 현상을 방지
+    [SerializeField] private float _reboundSmoothness = 10f; // 반동 적용 부드러움
+
+    private float _reboundX = 0;
+    private float _reboundY = 0;
+    private void OnEnable()
+    {
+        WeaponEvents.OnReboundCamera += AddRebound; // 이벤트 구독
+    }
+    private void OnDisable()
+    {
+        WeaponEvents.OnReboundCamera -= AddRebound; // 이벤트 해제
+    }
     private void Update()
     {
-        // 게임 시작하면 y축이 0도 -> -1도
-        //if (!Input.GetMouseButton(1))
-        //{
-        //    return;
-        //}
+        MouseInput();
+        ApplyRotation();
+        RecoverRebound();
+    }
 
-        // 1. 마우스 입력 받기
+    private void MouseInput()
+    {
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
-        // 2. 마우스 입력을 누적한 방향을 구한다..
-        _accumulationx += mouseX * RotationSpeed * Time.deltaTime;
+        _accumulationX += mouseX * RotationSpeed * Time.deltaTime;
         _accumulationY += mouseY * RotationSpeed * Time.deltaTime;
 
-        // 3. 사람처럼 -90 ~ 90도 사이로 제한한다.
         _accumulationY = Mathf.Clamp(_accumulationY, -90f, 90f);
+    }
 
-        // 4. 회전 방향으로 카메라 회전하기
-        // 새로운 위치 = 이전 위치 + (속도 * 방향 * 시간)
-        // 새로운 회전 = 이전 회전 + (속도 * 방향 * 시간)
-        // 왜 (-y축, x축)을 방향으로 설정했는지 eulerAngle에 대해 학습
-        transform.eulerAngles = new Vector3(-_accumulationY, _accumulationx);
+    private void ApplyRotation()
+    {
+        // 마우스 회전에 반동을 더함
+        float finalX = _accumulationX + _reboundY; // 좌우 반동
+        float finalY = _accumulationY + _reboundX; // 상하 반동
 
-        // 쿼터니언 : 사원수 -> 쓰는 이유는 짐벌락 현상 방지
-        // 학습 : 짐벌락, 쿼터니언을 왜 쓰는가 (게임 수학/물리)
+        // 상하 회전 최종 제한
+        finalY = Mathf.Clamp(finalY, -90f, 90f);
+
+        transform.eulerAngles = new Vector3(-finalY, finalX, 0f);
+    }
+
+    private void RecoverRebound()
+    {
+        // 반동을 0으로 부드럽게 복구
+        _reboundX = Mathf.Lerp(_reboundX, 0f, _reboundSmoothness * Time.deltaTime);
+        _reboundY = Mathf.Lerp(_reboundY, 0f, _reboundSmoothness * Time.deltaTime);
+    }
+
+    private void AddRebound(Vector3 weaponRebound)
+    {
+        //_accumulationY += weaponRebound.x;
+        //_accumulationX += weaponRebound.y;
+
+        _reboundX += weaponRebound.x;
+        _reboundY += weaponRebound.y;
     }
 }

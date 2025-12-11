@@ -75,6 +75,7 @@ public class Weapon : MonoBehaviour, IWeapon
         _bulletCount.TryConsume();
         BulletUIChange();
         Fire();
+        TriggerRebound();
         _timer = 0f;
     }
 
@@ -135,7 +136,13 @@ public class Weapon : MonoBehaviour, IWeapon
             _hitEffectVFX.Play();
         }
     }
+    private void TriggerRebound()
+    {
+        Vector3 rebound = _weaponData.CalculateRebound();
 
+        // 이벤트로 반동 전달 (CameraRotate에서 받음)
+        WeaponEvents.TriggerRebound(rebound);
+    }
 
     private void BulletUIChange()
     {

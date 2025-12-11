@@ -19,8 +19,10 @@ public class Monster : MonoBehaviour
     private float _checkDistanceInterval = 0.2f;
 
     private Vector3 _knockbackVelocity;
-    private float _minKnockbackVelocity = 0.1f;
-    private float _knockbackDecay = 5f;
+    // 최소 넉백 속도 (이거 안넘으면 넉백안됨)
+    [SerializeField] private float _minKnockbackVelocity = 0.1f;
+    // 넉백 감속 속도
+    [SerializeField] private float _knockbackDecay = 5f;
 
     private void Awake()
     {
@@ -35,7 +37,6 @@ public class Monster : MonoBehaviour
     private void Update()
     {
         HandleKnockback();
-        HandleTimer();
         HandleMonsterState();
     }
 
@@ -49,13 +50,10 @@ public class Monster : MonoBehaviour
         }
     }
 
-    private void HandleTimer()
-    {
-        _timer += Time.deltaTime;
-    }
-
     private void HandleMonsterState()
     {
+        _timer += Time.deltaTime;
+
         // 몬스터의 상태에 따라 다른 행동을 한다. (다른 메서드를 호출한다.)
         switch (_state)
         {

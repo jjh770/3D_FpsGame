@@ -12,10 +12,12 @@ public class PlayerBombFire : MonoBehaviour
     [SerializeField] private Bomb _bombPrefab;
     [SerializeField] private float _throwPower = 15f;
     private PlayerBombs _playerBombs;
+    private Camera _mainCamera;
 
     private void Awake()
     {
         _playerBombs = GetComponent<PlayerBombs>();
+        _mainCamera = Camera.main;
     }
     private void Start()
     {
@@ -31,7 +33,7 @@ public class PlayerBombFire : MonoBehaviour
             BombUIChange();
             GameObject bomb = ObjectPool.Instance.Spawn(_bombPrefab.gameObject, _fireTransform.position, Quaternion.identity);
             Rigidbody bombRigidbody = bomb.GetComponent<Rigidbody>();
-            bombRigidbody.AddForce(Camera.main.transform.forward * _throwPower, ForceMode.Impulse);
+            bombRigidbody.AddForce(_mainCamera.transform.forward * _throwPower, ForceMode.Impulse);
         }
     }
 

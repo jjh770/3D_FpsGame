@@ -19,10 +19,12 @@ public class Weapon : MonoBehaviour, IWeapon
     private bool _isReloading = false;
     private Coroutine _reloadCoroutine;
     public FireMode FireMode => _weaponData.FireMode;
+    private Camera _mainCamera;
 
     private void Awake()
     {
         InitializeWeapon();
+        _mainCamera = Camera.main;
     }
 
     private void Start()
@@ -114,7 +116,7 @@ public class Weapon : MonoBehaviour, IWeapon
     private void Fire()
     {
         // Ray를 생성하고 [발사할 위치], [방향]을 설정
-        Ray ray = new Ray(_fireTransform.position, Camera.main.transform.forward);
+        Ray ray = new Ray(_fireTransform.position, _mainCamera.transform.forward);
 
         // RayCastHit(충돌한 대상의 정보)를 저장할 변수
         RaycastHit hitInfo;

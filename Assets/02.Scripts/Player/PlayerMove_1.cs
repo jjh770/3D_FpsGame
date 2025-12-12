@@ -34,12 +34,12 @@ public class PlayerMove_1 : MonoBehaviour
         {
             if (_jumpCount == 0 && _controller.isGrounded)
             {
-                _gravityController.SetYVelocity(_stats.JumpPower.Value);
+                _gravityController.Jump(_stats.JumpPower.Value);
                 _jumpCount = 1;
             }
             else if (_jumpCount == 1 && _stats.Stamina.TryConsume(_moveConfig.JumpStamina))
             {
-                _gravityController.SetYVelocity(_stats.JumpPower.Value);
+                _gravityController.Jump(_stats.JumpPower.Value);
                 _jumpCount = 2;
             }
         }

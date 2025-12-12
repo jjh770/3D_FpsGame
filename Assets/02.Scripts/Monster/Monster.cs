@@ -84,11 +84,10 @@ public class Monster : MonoBehaviour
     {
         if (_knockbackVelocity.magnitude > _minKnockbackVelocity)
         {
-            _controller.Move(_knockbackVelocity * Time.deltaTime);
-            // 점진적 감속.
+            var knockbackThisFrame = _knockbackVelocity;
+            // 넉백 속도를 점진적으로 감속시킵니다.
             _knockbackVelocity = Vector3.Lerp(_knockbackVelocity, Vector3.zero, _knockbackDecay * Time.deltaTime);
-
-            return _knockbackVelocity;
+            return knockbackThisFrame;
         }
         return Vector3.zero;
     }

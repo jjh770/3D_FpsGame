@@ -30,8 +30,8 @@ public class GravityController : MonoBehaviour
     }
 
     public float YVelocity => _yVelocity;
-    public void SetYVelocity(float value)
+    public void Jump(float jumpPower)
     {
-        _yVelocity = value;
+        _yVelocity = jumpPower;
     }
 }

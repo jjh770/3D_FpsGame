@@ -4,7 +4,7 @@
 [RequireComponent(typeof(MonsterAI))]
 [RequireComponent(typeof(MonsterStats))]
 [RequireComponent(typeof(MonsterCombat))]
-public class Monster : MonoBehaviour
+public class Monster : MonoBehaviour, IDamageable
 {
     [SerializeField] private Player _player;
     private MonsterCombat _combat;
@@ -20,9 +20,9 @@ public class Monster : MonoBehaviour
         _combat.OnDeath += HandleDeath;
         _combat.OnHit += HandleHit;
     }
-    public void TakeDamage(float damage)
+    public bool TryTakeDamage(float damage)
     {
-        _combat.TakeDamage(damage);
+        return _combat.TryTakeDamage(damage);
     }
 
     public void TakeKnockback(Vector3 direction, float knockbackAmount)

@@ -2,6 +2,8 @@
 
 public class Bomb : MonoBehaviour
 {
+    [SerializeField] private LayerMask _damageLayer;
+
     [SerializeField] private GameObject _explosionEffectPrefab;
     [SerializeField] private float _explosionRadius = 2;
     [SerializeField] private float _damage = 1000;
@@ -23,26 +25,27 @@ public class Bomb : MonoBehaviour
     }
     private void DamageToMonster()
     {
-        int monsterLayer = LayerMask.NameToLayer("Monster");
-        int layerMask = 1 << monsterLayer;
+        Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius, _damageLayer);
 
-        Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius, layerMask);
-
-
-        for (int i = 0; i < colliders.Length; i++)
+        foreach (Collider collider in colliders)
         {
-            Monster monster = colliders[i].GetComponent<Monster>();
-            if (monster == null) continue;
+            IDamageable damageable = collider.GetComponent<IDamageable>();
 
-            float distance = Vector3.Distance(transform.position, monster.transform.position);
+            if (damageable == null) continue;
+
+            float distance = Vector3.Distance(transform.position, collider.transform.position);
             distance = Mathf.Max(1f, distance);
 
             float finalDamage = _damage / distance;
 
-            monster.TakeDamage(finalDamage);
+            damageable.TryTakeDamage(finalDamage);
 
-            Vector3 knockbackDirection = (monster.transform.position - transform.position).normalized;
-            monster.TakeKnockback(knockbackDirection, _knockbackForce);
+            Monster monster = collider.GetComponent<Monster>();
+            if (monster != null)
+            {
+                Vector3 knockbackDirection = (collider.transform.position - transform.position).normalized;
+                monster.TakeKnockback(knockbackDirection, _knockbackForce);
+            }
         }
     }
     private void BombEffect(Collision collision)

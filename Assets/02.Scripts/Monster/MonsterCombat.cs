@@ -51,12 +51,12 @@ public class MonsterCombat : MonoBehaviour
         _attackEffectVFX.transform.position = _attackTransform.position;
         _attackEffectVFX.transform.rotation = Quaternion.LookRotation(direction);
         _attackEffectVFX.Play();
-        _player.TakeDamage(_stats.AttackDamage.Value);
+        _player.TryTakeDamage(_stats.AttackDamage.Value);
 
         yield return new WaitForSeconds(1f);
     }
 
-    public bool TakeDamage(float damage)
+    public bool TryTakeDamage(float damage)
     {
         if (_ai.State == EMonsterState.Hit || _ai.State == EMonsterState.Death)
         {

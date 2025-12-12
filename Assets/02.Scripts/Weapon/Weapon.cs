@@ -140,8 +140,14 @@ public class Weapon : MonoBehaviour, IWeapon
             Monster monster = hitInfo.collider.gameObject.GetComponent<Monster>();
             if (monster != null)
             {
-                monster.TakeDamage(_weaponData.Damage);
+                monster.TryTakeDamage(_weaponData.Damage);
                 monster.TakeKnockback(ray.direction, _weaponData.KnockbackAmount);
+            }
+
+            Drum drum = hitInfo.collider.gameObject.GetComponent<Drum>();
+            if (drum != null)
+            {
+                drum.TryTakeDamage(10);
             }
         }
     }

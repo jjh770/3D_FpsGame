@@ -72,6 +72,7 @@ public class MonsterCombat : MonoBehaviour
         {
             _ai.SetState(EMonsterState.Death);
             StartCoroutine(Death_Coroutine());
+            return false;
         }
         return true;
     }
@@ -84,7 +85,7 @@ public class MonsterCombat : MonoBehaviour
     private IEnumerator Hit_Coroutine()
     {
         yield return new WaitForSeconds(0.2f);
-        _ai.SetState(EMonsterState.Comeback);
+        _ai.SetState(EMonsterState.Idle);
         OnHit?.Invoke();
     }
 

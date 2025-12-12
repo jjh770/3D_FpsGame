@@ -47,13 +47,14 @@ public class Drum : MonoBehaviour, IDamageable
 
         foreach (Collider collider in colliders)
         {
-            IDamageable damageable = collider.GetComponent<IDamageable>();
-
-            damageable.TryTakeDamage(_damage.Value);
+            if (collider.TryGetComponent<IDamageable>(out var damageable))
+            {
+                damageable.TryTakeDamage(_damage.Value);
+            }
         }
 
         yield return new WaitForSeconds(3f);
-        Destroy(_explosionParticle.gameObject, 2f); // 파티클도 정리
+        Destroy(explosionParicle.gameObject, explosionParicle.main.duration);
         Destroy(gameObject);
     }
     private void OnDrawGizmosSelected()

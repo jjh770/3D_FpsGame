@@ -2887,7 +2887,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 196fdd1cfc483bc4dadc4b6bf3ead6af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DamageLayer:
+  _damageLayer:
     serializedVersion: 2
     m_Bits: 832
   _health:
@@ -2899,6 +2899,8 @@ MonoBehaviour:
   _explosionParticle: {fileID: 5195231291446677891, guid: a5f2e1a561eda814091741bf454dd28c, type: 3}
   _explosionRadius:
     _value: 5
+  _explosionForce:
+    _value: 1500
 --- !u!54 &1017582224
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3760,9 +3762,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 196fdd1cfc483bc4dadc4b6bf3ead6af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DamageLayer:
+  _damageLayer:
     serializedVersion: 2
-    m_Bits: 896
+    m_Bits: 832
   _health:
     _maxValue: 40
     _value: 0
@@ -3771,7 +3773,9 @@ MonoBehaviour:
     _value: 100
   _explosionParticle: {fileID: 5195231291446677891, guid: a5f2e1a561eda814091741bf454dd28c, type: 3}
   _explosionRadius:
-    _value: 0
+    _value: 5
+  _explosionForce:
+    _value: 1500
 --- !u!136 &1573553318
 CapsuleCollider:
   m_ObjectHideFlags: 0

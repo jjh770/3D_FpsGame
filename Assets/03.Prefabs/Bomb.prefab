@@ -149,6 +149,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b0074c10200c1d4290fc2d80193581e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _damageLayer:
+    serializedVersion: 2
+    m_Bits: 768
   _explosionEffectPrefab: {fileID: 1620140131458704099, guid: 57e5b83dfee152a47aedf7d83c83e9f5, type: 3}
   _explosionRadius: 2
   _damage: 30

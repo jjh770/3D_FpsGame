@@ -4,13 +4,18 @@
 [RequireComponent(typeof(MonsterAI))]
 [RequireComponent(typeof(MonsterStats))]
 [RequireComponent(typeof(MonsterCombat))]
-[RequireComponent(typeof(MonsterStats))]
 public class Monster : MonoBehaviour
 {
+    [SerializeField] private Player _player;
     private MonsterCombat _combat;
+    private MonsterAI _ai;
     private void Awake()
     {
         _combat = GetComponent<MonsterCombat>();
+        _ai = GetComponent<MonsterAI>();
+
+        _combat.Initialize(_player);
+        _ai.Initialize(_player);
     }
     public void TakeDamage(float damage)
     {

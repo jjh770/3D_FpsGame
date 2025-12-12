@@ -4,8 +4,8 @@ using UnityEngine;
 public class MonsterAI : MonoBehaviour
 {
     [SerializeField] private EMonsterState _state = EMonsterState.Idle;
-    [SerializeField] private GameObject _player;
 
+    private Player _player;
     private MonsterMove _monsterMove;
     private MonsterStats _stats;
 
@@ -33,7 +33,10 @@ public class MonsterAI : MonoBehaviour
 
         HandleMonsterState();
     }
-
+    public void Initialize(Player player)
+    {
+        _player = player;
+    }
     public void SetState(EMonsterState newState)
     {
         _state = newState;

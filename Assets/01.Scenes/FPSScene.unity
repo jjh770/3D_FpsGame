@@ -4198,6 +4198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33e8ea8d5c78be04e848a02e1a4864f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _player: {fileID: 851221438}
 --- !u!114 &2046690793
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4251,7 +4252,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _attackEffectVFX: {fileID: 2107445927}
   _attackTransform: {fileID: 656689226}
-  _player: {fileID: 851221438}
 --- !u!114 &2046690796
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4265,7 +4265,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _state: 0
-  _player: {fileID: 851221425}
 --- !u!114 &2046690797
 MonoBehaviour:
   m_ObjectHideFlags: 0

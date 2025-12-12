@@ -5,8 +5,8 @@ public class MonsterCombat : MonoBehaviour
 {
     [SerializeField] private ParticleSystem _attackEffectVFX;
     [SerializeField] private Transform _attackTransform;
-    [SerializeField] private Player _player;
 
+    private Player _player;
     private MonsterStats _stats;
     private MonsterAI _ai;
     private MonsterMove _move;
@@ -28,7 +28,10 @@ public class MonsterCombat : MonoBehaviour
             TryAttack();
         }
     }
-
+    public void Initialize(Player player)
+    {
+        _player = player;
+    }
     private void TryAttack()
     {
         if (_attackTimer < _stats.AttackCoolTime.Value) return;

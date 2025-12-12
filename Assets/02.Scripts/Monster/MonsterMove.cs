@@ -10,6 +10,7 @@ public class MonsterMove : MonoBehaviour
     // 넉백 감속 속도
     [SerializeField] private float _knockbackDecay = 5f;
     public bool IsKnockedBack => _knockbackVelocity.magnitude > _minKnockbackVelocity;
+    private Vector3 _stateMovement;
 
     private void Awake()
     {
@@ -30,16 +31,16 @@ public class MonsterMove : MonoBehaviour
 
         // 3. 상태별 이동
         //totalMovement += GetStateMovement();
+        totalMovement += _stateMovement;
 
         // 4. 한 번만 Move 호출!
         _controller.Move(totalMovement * Time.deltaTime);
+        _stateMovement = Vector3.zero;
     }
 
     public void Move(Vector3 direction, float speed)
     {
-        Vector3 movement = direction * speed;
-        movement.y = _gravityController.YVelocity;
-        _controller.Move(movement * Time.deltaTime);
+        _stateMovement = direction * speed;
     }
 
     public void TakeKnockBack(Vector3 direction, float knockbackAmount)
@@ -58,5 +59,4 @@ public class MonsterMove : MonoBehaviour
         }
         return Vector3.zero;
     }
-
 }

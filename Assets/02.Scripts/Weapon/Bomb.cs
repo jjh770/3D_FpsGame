@@ -30,21 +30,21 @@ public class Bomb : MonoBehaviour
         foreach (Collider collider in colliders)
         {
             IDamageable damageable = collider.GetComponent<IDamageable>();
+            if (damageable != null)
+            {
+                float distance = Vector3.Distance(transform.position, collider.transform.position);
+                distance = Mathf.Max(1f, distance);
 
-            if (damageable == null) continue;
+                float finalDamage = _damage / distance;
 
-            float distance = Vector3.Distance(transform.position, collider.transform.position);
-            distance = Mathf.Max(1f, distance);
+                damageable.TryTakeDamage(finalDamage);
+            }
 
-            float finalDamage = _damage / distance;
-
-            damageable.TryTakeDamage(finalDamage);
-
-            Monster monster = collider.GetComponent<Monster>();
-            if (monster != null)
+            IKnockbackable knockbackable = collider.GetComponent<IKnockbackable>();
+            if (knockbackable != null)
             {
                 Vector3 knockbackDirection = (collider.transform.position - transform.position).normalized;
-                monster.TakeKnockback(knockbackDirection, _knockbackForce);
+                knockbackable.TakeKnockback(knockbackDirection, _knockbackForce);
             }
         }
     }

@@ -141,9 +141,9 @@ public class Weapon : MonoBehaviour, IWeapon
             {
                 damageable.TryTakeDamage(_weaponData.Damage);
             }
-            if (hitInfo.collider.TryGetComponent<Monster>(out Monster monster))
+            if (hitInfo.collider.TryGetComponent<IKnockbackable>(out var knockbackable))
             {
-                monster.TakeKnockback(ray.direction, _weaponData.KnockbackAmount);
+                knockbackable.TakeKnockback(ray.direction, _weaponData.KnockbackAmount);
             }
         }
     }

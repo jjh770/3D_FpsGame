@@ -4,7 +4,7 @@
 [RequireComponent(typeof(MonsterAI))]
 [RequireComponent(typeof(MonsterStats))]
 [RequireComponent(typeof(MonsterCombat))]
-public class Monster : MonoBehaviour, IDamageable
+public class Monster : MonoBehaviour, IDamageable, IKnockbackable
 {
     [SerializeField] private Player _player;
     private MonsterCombat _combat;

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 public class GravityController : MonoBehaviour
 {
     [SerializeField] private GravityConfigSO _gravityConfig;

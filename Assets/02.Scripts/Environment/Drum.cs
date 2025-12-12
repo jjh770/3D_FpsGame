@@ -13,6 +13,7 @@ public class Drum : MonoBehaviour, IDamageable
 
     [SerializeField] private ValueStat _explosionRadius;
     [SerializeField] private ValueStat _explosionForce;
+    [SerializeField] private float _knockbackForce = 100f;
 
     private void Awake()
     {
@@ -36,9 +37,9 @@ public class Drum : MonoBehaviour, IDamageable
 
     private IEnumerator Explode_Coroutine()
     {
-        ParticleSystem explosionParicle = Instantiate(_explosionParticle);
-        explosionParicle.transform.position = transform.position;
-        explosionParicle.Play();
+        ParticleSystem explosionParticle = Instantiate(_explosionParticle);
+        explosionParticle.transform.position = transform.position;
+        explosionParticle.Play();
 
         _rigidbody.AddForce(Vector3.up * _explosionForce.Value);
         _rigidbody.AddTorque(UnityEngine.Random.insideUnitSphere * 90f);
@@ -51,10 +52,15 @@ public class Drum : MonoBehaviour, IDamageable
             {
                 damageable.TryTakeDamage(_damage.Value);
             }
+            if (collider.TryGetComponent<IKnockbackable>(out var knockbackable))
+            {
+                Vector3 knockbackDirection = (collider.transform.position - transform.position).normalized;
+                knockbackable.TakeKnockback(knockbackDirection, _knockbackForce);
+            }
         }
 
         yield return new WaitForSeconds(3f);
-        Destroy(explosionParicle.gameObject, explosionParicle.main.duration);
+        Destroy(explosionParticle.gameObject, explosionParticle.main.duration);
         Destroy(gameObject);
     }
     private void OnDrawGizmosSelected()

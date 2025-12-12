@@ -7,7 +7,7 @@ public class Bomb : MonoBehaviour
     [SerializeField] private GameObject _explosionEffectPrefab;
     [SerializeField] private float _explosionRadius = 2;
     [SerializeField] private float _damage = 1000;
-    [SerializeField] private float _knockbackForce = 10f;
+    [SerializeField] private float _knockbackForce = 100f;
 
     private void OnEnable()
     {
@@ -18,19 +18,18 @@ public class Bomb : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         BombEffect(collision);
-        DamageToMonster();
+        ApplyExplosionDamage();
 
         // 폭탄 반환
         ObjectPool.Instance.Despawn(gameObject);
     }
-    private void DamageToMonster()
+    private void ApplyExplosionDamage()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius, _damageLayer);
 
         foreach (Collider collider in colliders)
         {
-            IDamageable damageable = collider.GetComponent<IDamageable>();
-            if (damageable != null)
+            if (collider.TryGetComponent<IDamageable>(out var damageable))
             {
                 float distance = Vector3.Distance(transform.position, collider.transform.position);
                 distance = Mathf.Max(1f, distance);
@@ -38,13 +37,12 @@ public class Bomb : MonoBehaviour
                 float finalDamage = _damage / distance;
 
                 damageable.TryTakeDamage(finalDamage);
-            }
 
-            IKnockbackable knockbackable = collider.GetComponent<IKnockbackable>();
-            if (knockbackable != null)
-            {
-                Vector3 knockbackDirection = (collider.transform.position - transform.position).normalized;
-                knockbackable.TakeKnockback(knockbackDirection, _knockbackForce);
+                if (damageable is IKnockbackable knockbackable)
+                {
+                    Vector3 knockbackDirection = (collider.transform.position - transform.position).normalized;
+                    knockbackable.TakeKnockback(knockbackDirection, _knockbackForce);
+                }
             }
         }
     }

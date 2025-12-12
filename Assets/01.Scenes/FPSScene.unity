@@ -2063,6 +2063,7 @@ GameObject:
   - component: {fileID: 851221428}
   - component: {fileID: 851221427}
   - component: {fileID: 851221438}
+  - component: {fileID: 851221439}
   - component: {fileID: 851221430}
   - component: {fileID: 851221434}
   - component: {fileID: 851221433}
@@ -2228,10 +2229,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6689ed75e62c1184fa61ea278ae506d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _config:
-    Gravity: -9.81
-    RunStamina: 10
-    JumpStamina: 25
+  _moveConfig: {fileID: 11400000, guid: 7e2c84988c81a4a4381acc3c50c774fa, type: 2}
 --- !u!114 &851221435
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2289,6 +2287,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6ec2adb72784d543b86d215b207c3f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &851221439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 851221425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1658a61806f7e7b4a9b312cad0d30983, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gravityConfig: {fileID: 11400000, guid: 5735184a25da80d419097fc9d8cae81b, type: 2}
 --- !u!1 &873212761
 GameObject:
   m_ObjectHideFlags: 0
@@ -4136,6 +4147,7 @@ GameObject:
   - component: {fileID: 2046690788}
   - component: {fileID: 2046690791}
   - component: {fileID: 2046690792}
+  - component: {fileID: 2046690794}
   - component: {fileID: 2046690793}
   m_Layer: 0
   m_Name: Monster
@@ -4257,6 +4269,8 @@ MonoBehaviour:
   _controller: {fileID: 2046690791}
   _attackEffectVFX: {fileID: 2107445927}
   _attackTransform: {fileID: 656689226}
+  _minKnockbackVelocity: 0.1
+  _knockbackDecay: 5
 --- !u!114 &2046690793
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4283,6 +4297,19 @@ MonoBehaviour:
     _value: 1
   _attackDamage:
     _value: 20
+--- !u!114 &2046690794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046690786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1658a61806f7e7b4a9b312cad0d30983, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gravityConfig: {fileID: 11400000, guid: 5735184a25da80d419097fc9d8cae81b, type: 2}
 --- !u!1001 &2107445926
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -9,6 +9,7 @@ public class Monster : MonoBehaviour
     [SerializeField] private CharacterController _controller;
     [SerializeField] private ParticleSystem _attackEffectVFX;
     [SerializeField] private Transform _attackTransform;
+    private GravityController _gravityController;
 
     private Vector3 _initPosition;
     private MonsterStats _stats;
@@ -26,6 +27,7 @@ public class Monster : MonoBehaviour
 
     private void Awake()
     {
+        _gravityController = GetComponent<GravityController>();
         _stats = GetComponent<MonsterStats>();
         _initPosition = transform.position;
     }
@@ -36,10 +38,16 @@ public class Monster : MonoBehaviour
 
     private void Update()
     {
+        _gravityController.UpdateGravity();
+        ApplyGravity();
         HandleKnockback();
         HandleMonsterState();
     }
-
+    private void ApplyGravity()
+    {
+        Vector3 gravityMove = new Vector3(0, _gravityController.YVelocity, 0);
+        _controller.Move(gravityMove * Time.deltaTime);
+    }
     private void HandleKnockback()
     {
         if (_knockbackVelocity.magnitude > _minKnockbackVelocity)

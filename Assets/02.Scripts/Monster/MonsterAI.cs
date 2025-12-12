@@ -15,6 +15,9 @@ public class MonsterAI : MonoBehaviour
     private Vector3 _direction;
     private float _checkDistanceInterval = 0.2f;
 
+    [SerializeField] private float _patrolTimer = 1f;
+    private float _timer;
+
     public EMonsterState State => _state;
 
     private void Awake()
@@ -50,6 +53,9 @@ public class MonsterAI : MonoBehaviour
             case EMonsterState.Idle:
                 Idle();
                 break;
+            case EMonsterState.Patrol:
+                Patrol();
+                break;
             case EMonsterState.Trace:
                 Trace();
                 break;
@@ -63,7 +69,6 @@ public class MonsterAI : MonoBehaviour
                 break;
             case EMonsterState.Death:
                 break;
-
         }
     }
 
@@ -75,6 +80,17 @@ public class MonsterAI : MonoBehaviour
         {
             _state = EMonsterState.Trace;
         }
+
+        if (_timer >= _patrolTimer)
+        {
+            _timer = 0;
+            _state = EMonsterState.Patrol;
+        }
+    }
+
+    private void Patrol()
+    {
+
     }
 
     private void Trace()

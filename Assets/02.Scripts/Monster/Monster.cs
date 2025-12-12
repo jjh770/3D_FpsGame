@@ -39,23 +39,58 @@ public class Monster : MonoBehaviour
     private void Update()
     {
         _gravityController.UpdateGravity();
-        ApplyGravity();
-        HandleKnockback();
+        Vector3 totalMovement = Vector3.zero;
+
+        // 1. 중력
+        totalMovement.y = _gravityController.YVelocity;
+
+        // 2. 넉백
+        totalMovement += GetKnockbackMovement();
+
+        // 3. 상태별 이동
+        totalMovement += GetStateMovement();
+
+        // 4. 한 번만 Move 호출!
+        _controller.Move(totalMovement * Time.deltaTime);
+
         HandleMonsterState();
     }
-    private void ApplyGravity()
+
+    private Vector3 GetStateMovement()
     {
-        Vector3 gravityMove = new Vector3(0, _gravityController.YVelocity, 0);
-        _controller.Move(gravityMove * Time.deltaTime);
+        switch (_state)
+        {
+            case EMonsterState.Trace:
+                return _direction * _stats.MoveSpeed.Value;
+
+            case EMonsterState.Comeback:
+                if (_distanceToInit > 0.5f)
+                {
+                    return _direction * _stats.MoveSpeed.Value;
+                }
+                return Vector3.zero;
+
+            default:
+                return Vector3.zero;
+        }
     }
-    private void HandleKnockback()
+
+    public void TakeKnockBack(Vector3 direction, float knockbackAmount)
+    {
+        _knockbackVelocity = direction.normalized * knockbackAmount;
+    }
+
+    private Vector3 GetKnockbackMovement()
     {
         if (_knockbackVelocity.magnitude > _minKnockbackVelocity)
         {
             _controller.Move(_knockbackVelocity * Time.deltaTime);
             // 점진적 감속.
             _knockbackVelocity = Vector3.Lerp(_knockbackVelocity, Vector3.zero, _knockbackDecay * Time.deltaTime);
+
+            return _knockbackVelocity;
         }
+        return Vector3.zero;
     }
 
     private void HandleMonsterState()
@@ -98,8 +133,6 @@ public class Monster : MonoBehaviour
     {
         // 플레이어를 쫓아가는 상태
         // TODO : Run 애니메이션
-        _controller.Move(_direction * _stats.MoveSpeed.Value * Time.deltaTime);
-
         if (_distance <= _stats.AttackDistance.Value)
         {
             _state = EMonsterState.Attack;
@@ -113,11 +146,7 @@ public class Monster : MonoBehaviour
 
     private void Comeback()
     {
-        if (_distanceToInit > 0.5f)
-        {
-            _controller.Move(_direction * _stats.MoveSpeed.Value * Time.deltaTime);
-        }
-        else
+        if (_distanceToInit <= 0.5f)
         {
             _state = EMonsterState.Idle;
         }
@@ -183,11 +212,6 @@ public class Monster : MonoBehaviour
             StartCoroutine(Death_Coroutine());
         }
         return true;
-    }
-
-    public void TakeKnockBack(Vector3 direction, float knockbackAmount)
-    {
-        _knockbackVelocity = direction.normalized * knockbackAmount;
     }
 
     private IEnumerator CheckDistance()

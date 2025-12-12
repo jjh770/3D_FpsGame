@@ -7,6 +7,7 @@ public class PlayerMove_1 : MonoBehaviour
     private CharacterController _controller;
     private GravityController _gravityController;
     private PlayerStats _stats;
+    private Camera _mainCamera;
     private int _jumpCount = 0;
 
     private void Awake()
@@ -14,6 +15,7 @@ public class PlayerMove_1 : MonoBehaviour
         _controller = GetComponent<CharacterController>();
         _gravityController = GetComponent<GravityController>();
         _stats = GetComponent<PlayerStats>();
+        _mainCamera = Camera.main;
     }
 
     private void Update()
@@ -51,7 +53,7 @@ public class PlayerMove_1 : MonoBehaviour
         direction.Normalize();
         bool isMoving = direction.magnitude > 0.1f;
 
-        direction = Camera.main.transform.TransformDirection(direction);
+        direction = _mainCamera.transform.TransformDirection(direction);
         direction.y = _gravityController.YVelocity;
 
         float moveSpeed = _stats.MoveSpeed.Value;

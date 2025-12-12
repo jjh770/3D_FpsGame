@@ -3,6 +3,8 @@
 public class Bomb : MonoBehaviour
 {
     [SerializeField] private GameObject _explosionEffectPrefab;
+    [SerializeField] private float ExplosionRadius = 2;
+    [SerializeField] private float Damage = 1000;
 
     private void OnEnable()
     {

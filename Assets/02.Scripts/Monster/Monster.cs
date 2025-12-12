@@ -25,7 +25,7 @@ public class Monster : MonoBehaviour
         _combat.TakeDamage(damage);
     }
 
-    public void TakeKnockBack(Vector3 direction, float knockbackAmount)
+    public void TakeKnockback(Vector3 direction, float knockbackAmount)
     {
         _combat.TakeKnockback(direction, knockbackAmount);
     }

@@ -1,32 +1,26 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 // 키보드를 누르면 캐릭터를 그 방향으로 이동 시키고 싶다
 public class PlayerMove_1 : MonoBehaviour
 {
-    [Serializable] // json 혹은 ScriptableObject 혹은 DB에서 읽어오게 하면 됨
-    public class MoveConfig
-    {
-        public float Gravity;
-        public float RunStamina;
-        public float JumpStamina;
-    }
-    public MoveConfig _config;
-
+    [SerializeField] private CharacterMoveConfigSO _moveConfig;
     private CharacterController _controller;
+    private GravityController _gravityController;
     private PlayerStats _stats;
-    private float _yVelocity = 0f;
+    private Camera _mainCamera;
     private int _jumpCount = 0;
 
     private void Awake()
     {
         _controller = GetComponent<CharacterController>();
+        _gravityController = GetComponent<GravityController>();
         _stats = GetComponent<PlayerStats>();
+        _mainCamera = Camera.main;
     }
 
     private void Update()
     {
-        ApplyGravity();
+        _gravityController.UpdateGravity();
         MoveAction();
         JumpAction();
     }
@@ -40,12 +34,12 @@ public class PlayerMove_1 : MonoBehaviour
         {
             if (_jumpCount == 0 && _controller.isGrounded)
             {
-                _yVelocity = _stats.JumpPower.Value;
+                _gravityController.Jump(_stats.JumpPower.Value);
                 _jumpCount = 1;
             }
-            else if (_jumpCount == 1 && _stats.Stamina.TryConsume(_config.JumpStamina))
+            else if (_jumpCount == 1 && _stats.Stamina.TryConsume(_moveConfig.JumpStamina))
             {
-                _yVelocity = _stats.JumpPower.Value;
+                _gravityController.Jump(_stats.JumpPower.Value);
                 _jumpCount = 2;
             }
         }
@@ -57,21 +51,16 @@ public class PlayerMove_1 : MonoBehaviour
 
         Vector3 direction = new Vector3(x, 0, y);
         direction.Normalize();
-        bool isMoving = direction.magnitude > 0.1f ? true : false;
+        bool isMoving = direction.magnitude > 0.1f;
 
-        direction = Camera.main.transform.TransformDirection(direction);
-        direction.y = _yVelocity; // 중력 적용
+        direction = _mainCamera.transform.TransformDirection(direction);
+        direction.y = _gravityController.YVelocity;
 
         float moveSpeed = _stats.MoveSpeed.Value;
-        if (Input.GetKey(KeyCode.LeftShift) && isMoving && _stats.Stamina.TryConsume(_config.RunStamina * Time.deltaTime))
+        if (Input.GetKey(KeyCode.LeftShift) && isMoving && _stats.Stamina.TryConsume(_moveConfig.RunStamina * Time.deltaTime))
         {
             moveSpeed = _stats.SprintSpeed.Value;
         }
         _controller.Move(direction * moveSpeed * Time.deltaTime);
-    }
-
-    private void ApplyGravity()
-    {
-        _yVelocity += _config.Gravity * Time.deltaTime;
     }
 }

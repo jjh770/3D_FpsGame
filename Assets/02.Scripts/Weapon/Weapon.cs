@@ -137,11 +137,13 @@ public class Weapon : MonoBehaviour, IWeapon
 
             // hitInfo의 태그와 레이어 비교하지 않은 이유
             // -> 어차피 Monster 컴포넌트를 가지고 와야하기 때문 (2번 일 안함)
-            Monster monster = hitInfo.collider.gameObject.GetComponent<Monster>();
-            if (monster != null)
+            if (hitInfo.collider.TryGetComponent<IDamageable>(out var damageable))
             {
-                monster.TakeDamage(_weaponData.Damage);
-                monster.TakeKnockBack(ray.direction, _weaponData.KnockbackAmount);
+                damageable.TryTakeDamage(_weaponData.Damage);
+                if (damageable is IKnockbackable knockbackable)
+                {
+                    knockbackable.TakeKnockback(ray.direction, _weaponData.KnockbackAmount);
+                }
             }
         }
     }

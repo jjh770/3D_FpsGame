@@ -3,7 +3,7 @@
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerStats))]
 [RequireComponent(typeof(PlayerMove_1))]
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IDamageable
 {
     private PlayerMove_1 _move;
     private PlayerGunFire _gunFire;
@@ -17,17 +17,8 @@ public class Player : MonoBehaviour
     }
 
 
-    public void TakeDamage(float damage)
+    public bool TryTakeDamage(float damage)
     {
-        _stats.Health.TryConsume(damage);
-        if (_stats.Health.Value > 0)
-        {
-            Debug.Log($"플레이어 {damage}입음");
-        }
-        else
-        {
-            Debug.Log($"플레이어 사망");
-        }
-
+        return _stats.Health.TryConsume(damage);
     }
 }

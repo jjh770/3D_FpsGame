@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class MonsterCombat : MonoBehaviour
@@ -11,6 +12,9 @@ public class MonsterCombat : MonoBehaviour
     private MonsterAI _ai;
     private MonsterMove _move;
     private float _attackTimer = 0f;
+
+    public event Action OnDeath;
+    public event Action OnHit;
 
     private void Awake()
     {
@@ -81,11 +85,12 @@ public class MonsterCombat : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
         _ai.SetState(EMonsterState.Comeback);
+        OnHit?.Invoke();
     }
 
     private IEnumerator Death_Coroutine()
     {
         yield return new WaitForSeconds(0.5f);
-        Destroy(gameObject);
+        OnDeath?.Invoke();
     }
 }

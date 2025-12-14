@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -22,6 +23,7 @@ public class MonsterAI : MonoBehaviour
     private float _timer;
 
     public EMonsterState State => _state;
+    public event Action SetPatrol;
 
     private void Awake()
     {
@@ -89,7 +91,6 @@ public class MonsterAI : MonoBehaviour
     {
         // 대기하는 상태
         // TODO : Idle 애니메이션
-
         if (_distance <= _stats.DetectDistance.Value)
         {
             _state = EMonsterState.Trace;
@@ -108,6 +109,8 @@ public class MonsterAI : MonoBehaviour
 
     private void Patrol()
     {
+        SetPatrol?.Invoke();
+
         // 플레이어 감지 시 추적 상태로 전환
         if (_distance <= _stats.DetectDistance.Value)
         {

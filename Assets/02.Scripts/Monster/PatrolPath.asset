@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01c89b7840916834c95a4fd19e7d7b40, type: 3}
   m_Name: PatrolPath
   m_EditorClassIdentifier: 
-  _pathName: New Patrol Path
+  _pathName: Monster1
   _description: "\uD328\uD2B8\uB864 \uACBD\uB85C \uC124\uBA85"
   _waypoints:
   - {x: 5, y: 1, z: 15}

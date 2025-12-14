@@ -9,7 +9,7 @@ using UnityEngine;
 public class Monster : MonoBehaviour, IDamageable, IKnockbackable
 {
     [SerializeField] private Player _player;
-    [SerializeField] private GameObject _mouth;
+    [SerializeField] private Transform _mouth;
     private MonsterCombat _combat;
     private MonsterAI _ai;
     private Quaternion _startRotation;
@@ -25,14 +25,15 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable
         _combat.Initialize(_player);
         _ai.Initialize(_player);
 
-        _ai.SetPatrol += () => SetMouthRotation(_startRotation);
         _combat.OnDeath += HandleDeath;
-        _combat.OnHit += () => SetMouthRotation(_mouthRotation);
+        _combat.OnHit += HandleHit;
     }
+
     private void Start()
     {
         _startRotation = _mouth.transform.localRotation;
     }
+
     public bool TryTakeDamage(float damage)
     {
         return _combat.TryTakeDamage(damage);
@@ -42,9 +43,22 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable
     {
         _combat.TakeKnockback(direction, knockbackAmount);
     }
+
+    private void HandleDeath()
+    {
+        Debug.Log($"{gameObject.name} 사망!");
+        // 생명주기 관리
+        Destroy(gameObject);
+    }
+
+    private void HandleHit()
+    {
+        SetMouthRotation(_mouthRotation);
+    }
+
     private void SetMouthRotation(Quaternion targetRotation)
     {
-        if (Quaternion.Angle(_mouth.transform.localRotation, targetRotation) < 0.1f)
+        if (Quaternion.Angle(_mouth.localRotation, targetRotation) < 0.1f)
             return;
 
         if (_currentMouthCoroutine != null)
@@ -52,38 +66,33 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable
 
         _currentMouthCoroutine = StartCoroutine(RotateMouth(targetRotation));
     }
-    private void HandleDeath()
-    {
-        Debug.Log($"{gameObject.name} 사망!");
-        // 생명주기 관리
-        Destroy(gameObject);
-    }
-    private void OnDestroy()
-    {
-        if (_combat != null)
-        {
-            _combat.OnDeath -= HandleDeath;
-            _combat.OnHit -= () => SetMouthRotation(_mouthRotation);
-        }
-    }
+
     private IEnumerator RotateMouth(Quaternion targetRotation)
     {
-        Quaternion startRotation = _mouth.transform.localRotation;
         float elapsed = 0f;
         float duration = 1f / _rotationSpeed;
 
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            _mouth.transform.localRotation = Quaternion.Slerp(
-                startRotation,
+            _mouth.localRotation = Quaternion.Slerp(
+                _startRotation,
                 targetRotation,
                 elapsed / duration
             );
             yield return null;
         }
 
-        _mouth.transform.localRotation = targetRotation;
+        _mouth.localRotation = targetRotation;
         _currentMouthCoroutine = null;
+    }
+
+    private void OnDestroy()
+    {
+        if (_combat != null)
+        {
+            _combat.OnDeath -= HandleDeath;
+            _combat.OnHit -= HandleHit;
+        }
     }
 }

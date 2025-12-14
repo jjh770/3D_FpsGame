@@ -2901,6 +2901,7 @@ MonoBehaviour:
     _value: 5
   _explosionForce:
     _value: 1500
+  _knockbackForce: 100
 --- !u!54 &1017582224
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3776,6 +3777,7 @@ MonoBehaviour:
     _value: 5
   _explosionForce:
     _value: 1500
+  _knockbackForce: 100
 --- !u!136 &1573553318
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3954,6 +3956,7 @@ GameObject:
   - component: {fileID: 1697615344}
   - component: {fileID: 1697615343}
   - component: {fileID: 1697615342}
+  - component: {fileID: 1697615346}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -4051,6 +4054,38 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1697615346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697615341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 23800000, guid: da9978281c85d6d4fbd7c44b6cf9b638, type: 2}
+  m_BuildHeightMesh: 0
 --- !u!1 &1779622259
 GameObject:
   m_ObjectHideFlags: 0
@@ -4413,7 +4448,9 @@ GameObject:
   - component: {fileID: 2046690797}
   - component: {fileID: 2046690796}
   - component: {fileID: 2046690795}
+  - component: {fileID: 2046690799}
   - component: {fileID: 2046690793}
+  - component: {fileID: 2046690798}
   m_Layer: 8
   m_Name: Monster
   m_TagString: Untagged
@@ -4595,6 +4632,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _state: 0
+  _patrolTimer: 1
 --- !u!114 &2046690797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4609,6 +4647,45 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _minKnockbackVelocity: 0.1
   _knockbackDecay: 5
+--- !u!195 &2046690798
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046690786}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 1
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &2046690799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046690786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c6e67eab0975e9469fb3a2bdfae5160, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _patrolPath: {fileID: 11400000, guid: 53c05b99b8f89c745966cc53f0052e94, type: 2}
+  _patrolPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1001 &2107445926
 PrefabInstance:
   m_ObjectHideFlags: 0

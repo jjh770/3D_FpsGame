@@ -15,6 +15,8 @@ public class MonsterCombat : MonoBehaviour
 
     public event Action OnDeath;
     public event Action OnHit;
+    public event Action OnDamageReceived;
+    public event Action OnHealthDepleted;
 
     private void Awake()
     {
@@ -23,25 +25,27 @@ public class MonsterCombat : MonoBehaviour
         _move = GetComponent<MonsterMove>();
     }
 
-    private void Update()
-    {
-        _attackTimer += Time.deltaTime;
-
-        if (_ai.State == EMonsterState.Attack)
-        {
-            TryAttack();
-        }
-    }
     public void Initialize(Player player)
     {
         _player = player;
     }
-    private void TryAttack()
+
+    public bool CanAttack()
     {
-        if (_attackTimer < _stats.AttackCoolTime.Value) return;
+        return _attackTimer >= _stats.AttackCoolTime.Value;
+    }
+
+    public void ExecuteAttack()
+    {
+        if (!CanAttack()) return;
 
         _attackTimer = 0f;
         StartCoroutine(Attack_Coroutine());
+    }
+
+    public void UpdateAttackTimer(float deltaTime)
+    {
+        _attackTimer += deltaTime;
     }
 
     private IEnumerator Attack_Coroutine()
@@ -65,13 +69,11 @@ public class MonsterCombat : MonoBehaviour
 
         if (_stats.Health.TryConsume(damage))
         {
-            _ai.SetState(EMonsterState.Hit);
-            StartCoroutine(Hit_Coroutine());
+            OnDamageReceived?.Invoke();
         }
         else
         {
-            _ai.SetState(EMonsterState.Death);
-            StartCoroutine(Death_Coroutine());
+            OnHealthDepleted?.Invoke();
             return false;
         }
         return true;
@@ -82,14 +84,13 @@ public class MonsterCombat : MonoBehaviour
         _move.TakeKnockBack(direction, amount);
     }
 
-    private IEnumerator Hit_Coroutine()
+    public IEnumerator Hit_Coroutine()
     {
         yield return new WaitForSeconds(0.2f);
-        _ai.SetState(EMonsterState.Idle);
         OnHit?.Invoke();
     }
 
-    private IEnumerator Death_Coroutine()
+    public IEnumerator Death_Coroutine()
     {
         yield return new WaitForSeconds(0.5f);
         OnDeath?.Invoke();

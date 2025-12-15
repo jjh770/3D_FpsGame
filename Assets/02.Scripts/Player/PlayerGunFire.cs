@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerGunFire : PlayerComponent
 {
@@ -11,6 +12,7 @@ public class PlayerGunFire : PlayerComponent
 
     protected override void Awake()
     {
+        base.Awake();
         // 시작 시 모든 무기 비활성화
         foreach (var weapon in _weapons)
         {
@@ -28,6 +30,10 @@ public class PlayerGunFire : PlayerComponent
 
     private void Update()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return; // UI 클릭이므로 총을 쏘지 않음
+        }
         if (!CanExecute()) return;
 
         if (_currentWeapon == null) return;

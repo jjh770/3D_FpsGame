@@ -20,7 +20,9 @@ public class GameManager : MonoBehaviour
     {
         SetState(EGameState.Ready);
         StartCoroutine(StartToPlay_Coroutine());
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Confined; // 창 내부로 제한
+        Cursor.visible = true; // 커서 표시
     }
 
     public void SetState(EGameState newState)

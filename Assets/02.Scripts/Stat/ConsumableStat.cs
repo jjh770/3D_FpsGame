@@ -57,16 +57,12 @@ public class ConsumableStat
     }
     public bool TryConsume(float amount)
     {
-        Debug.Log($"[TryConsume] 현재: {_value}/{_maxValue}, 소비시도: {amount}");
-
         if (_value < amount)
         {
-            Debug.LogWarning($"[실패] 값 부족! {_value} < {amount}");
             Consume(_value);
             return false;
         }
 
-        Debug.Log($"[성공] {amount} 소비");
         Consume(amount);
         return true;
     }

@@ -14,6 +14,8 @@ public class ConsumableStat
     public float MaxValue => _maxValue;
     public float Value => _value;
 
+    public event Action<float, float> OnValueChanged; // (current, max)
+
     public void Initialize()
     {
         SetValue(_maxValue);
@@ -42,19 +44,23 @@ public class ConsumableStat
     public void SetValue(float value)
     {
         _value = value;
-        if (_value > _maxValue)
-        {
-            _value = _maxValue;
-        }
+        _value = Mathf.Clamp(value, 0, _maxValue);
+        OnValueChanged?.Invoke(_value, _maxValue);
     }
     public void RegenValue(float time)
     {
-        _value += _regenValue * time;
-        if (_value > _maxValue)
-        {
-            _value = _maxValue;
-        }
+        if (_value >= _maxValue) return;
+
+        float oldValue = _value;
+        _value = Mathf.Min(_value + _regenValue * time, _maxValue);
+        OnValueChanged?.Invoke(_value, _maxValue);
     }
+
+    public float GetPercentage()
+    {
+        return _maxValue > 0 ? _value / _maxValue : 0f;
+    }
+
     public bool TryConsume(float amount)
     {
         if (_value < amount)

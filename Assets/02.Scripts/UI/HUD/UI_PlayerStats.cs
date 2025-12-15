@@ -1,15 +1,87 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class UI_PlayerStats : MonoBehaviour
 {
     [SerializeField] private PlayerStats _stats;
-    [SerializeField] private Slider _healthSlider;
-    [SerializeField] private Slider _staminaSlider;
 
-    private void Update()
+    [Header("Health UI")]
+    [SerializeField] private Slider _healthSlider;
+    [SerializeField] private Image _healthDelayFill;
+
+    [Header("Stamina UI")]
+    [SerializeField] private Slider _staminaSlider;
+    [SerializeField] private Image _staminaDelayFill;
+
+    [Header("Animation Settings")]
+    [SerializeField] private float _mainSliderDuration = 0.2f;
+    [SerializeField] private float _delayFillDuration = 0.5f;
+    [SerializeField] private Ease _mainEase = Ease.OutQuad;
+    [SerializeField] private Ease _delayEase = Ease.OutQuad;
+
+    private Tweener _healthTween;
+    private Tweener _healthDelayTween;
+    private Tweener _staminaTween;
+    private Tweener _staminaDelayTween;
+
+    private void OnEnable()
     {
-        _healthSlider.value = _stats.Health.Value / _stats.Health.MaxValue;
-        _staminaSlider.value = _stats.Stamina.Value / _stats.Stamina.MaxValue;
+        if (_stats != null)
+        {
+            _stats.Health.OnValueChanged += UpdateHealthSlider;
+            _stats.Stamina.OnValueChanged += UpdateStaminaSlider;
+
+            float healthPercent = _stats.Health.GetPercentage();
+            _healthSlider.value = healthPercent;
+            _healthDelayFill.fillAmount = healthPercent;
+
+            _staminaSlider.value = _stats.Stamina.GetPercentage();
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (_stats != null)
+        {
+            _stats.Health.OnValueChanged -= UpdateHealthSlider;
+            _stats.Stamina.OnValueChanged -= UpdateStaminaSlider;
+        }
+
+        _healthTween?.Kill();
+        _healthDelayTween?.Kill();
+        _staminaTween?.Kill();
+    }
+
+    private void UpdateHealthSlider(float current, float max)
+    {
+        float targetValue = max > 0 ? current / max : 0;
+
+        _healthTween?.Kill();
+        _healthTween = _healthSlider.DOValue(targetValue, _mainSliderDuration)
+            .SetEase(_mainEase);
+
+        if (_healthDelayFill != null)
+        {
+            _healthDelayTween?.Kill();
+            _healthDelayTween = _healthDelayFill.DOFillAmount(targetValue, _delayFillDuration)
+                .SetEase(_delayEase);
+        }
+    }
+
+    private void UpdateStaminaSlider(float current, float max)
+    {
+        float targetValue = max > 0 ? current / max : 0;
+
+        _staminaTween?.Kill();
+        _staminaTween = _staminaSlider.DOValue(targetValue, _mainSliderDuration)
+            .SetEase(_mainEase);
+
+        if (_staminaDelayFill != null)
+        {
+            _staminaDelayTween?.Kill();
+            _staminaDelayTween = _staminaDelayFill.DOFillAmount(targetValue, _delayFillDuration)
+                .SetEase(_delayEase);
+        }
     }
 }

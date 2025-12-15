@@ -66,6 +66,7 @@ public class ConsumableStat
         Consume(amount);
         return true;
     }
+
     public void Consume(float amount)
     {
         _value -= amount;

@@ -11,8 +11,15 @@ public class GameManager : MonoBehaviour
     private EGameState _state = EGameState.Ready;
     public EGameState State => _state;
 
+    [SerializeField] private float _readyToPlayTime = 2f;
+    [SerializeField] private float _playDelayTime = 0.5f;
     private void Awake()
     {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         _instance = this;
     }
 
@@ -20,7 +27,6 @@ public class GameManager : MonoBehaviour
     {
         SetState(EGameState.Ready);
         StartCoroutine(StartToPlay_Coroutine());
-        //Cursor.lockState = CursorLockMode.Locked;
         Cursor.lockState = CursorLockMode.Confined; // 창 내부로 제한
         Cursor.visible = true; // 커서 표시
     }
@@ -57,7 +63,6 @@ public class GameManager : MonoBehaviour
     private void Playing()
     {
         Time.timeScale = 1f;
-        Time.fixedDeltaTime = 0.02f;
         _stateTextUI.gameObject.SetActive(false);
     }
 
@@ -69,9 +74,9 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator StartToPlay_Coroutine()
     {
-        yield return new WaitForSecondsRealtime(2f);
+        yield return new WaitForSecondsRealtime(_readyToPlayTime);
         _stateTextUI.text = "시작!";
-        yield return new WaitForSecondsRealtime(0.5f);
+        yield return new WaitForSecondsRealtime(_playDelayTime);
         SetState(EGameState.Playing);
     }
 }

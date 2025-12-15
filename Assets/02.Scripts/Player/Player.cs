@@ -10,6 +10,7 @@ public class Player : MonoBehaviour, IDamageable
     private PlayerMove_1 _move;
     private PlayerGunFire _gunFire;
     private PlayerStats _stats;
+    public event Action OnHitPlayer;
     public event Action OnPlayerDeath;
     public event Action OnPlayerDeathComplete;
     private void Awake()
@@ -26,6 +27,7 @@ public class Player : MonoBehaviour, IDamageable
             StartCoroutine(Death_Coroutine());
             return false;
         }
+        OnHitPlayer?.Invoke();
         return true;
     }
 

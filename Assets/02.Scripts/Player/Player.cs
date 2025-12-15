@@ -11,6 +11,7 @@ public class Player : MonoBehaviour, IDamageable
     private PlayerGunFire _gunFire;
     private PlayerStats _stats;
     public event Action OnPlayerDeath;
+    public event Action OnPlayerDeathComplete;
     private void Awake()
     {
         _move = GetComponent<PlayerMove_1>();
@@ -33,7 +34,6 @@ public class Player : MonoBehaviour, IDamageable
         // 플레이어 입력 비활성화
         OnPlayerDeath?.Invoke();
         yield return new WaitForSeconds(2f); // 사망 연출 대기
-
-        GameManager.Instance.SetState(EGameState.GameOver);
+        OnPlayerDeathComplete?.Invoke();
     }
 }

@@ -27,7 +27,7 @@ public class MonsterHealthBar : MonoBehaviour
         if (_lastHealth != _stats.Health.Value)
         {
             _lastHealth = _stats.Health.Value;
-            _gaugeImage.fillAmount = _stats.Health.Value / _stats.Health.MaxValue;
+            _gaugeImage.fillAmount = _stats.GetHealthPercentage();
         }
 
         // 빌보드 기법 : 카메라의 위치와 회전에 상관없이 항상 정면을 바라보게 하는 기법

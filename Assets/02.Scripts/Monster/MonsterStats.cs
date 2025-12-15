@@ -22,4 +22,9 @@ public class MonsterStats : MonoBehaviour
     {
         _health.Initialize();
     }
+
+    public float GetHealthPercentage()
+    {
+        return Health.Value / Health.MaxValue;
+    }
 }

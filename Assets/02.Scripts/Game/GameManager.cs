@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -6,10 +7,22 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
     public static GameManager Instance => _instance;
-
+    [SerializeField] private Player _player;
     [SerializeField] private TextMeshProUGUI _stateTextUI;
     private EGameState _state = EGameState.Ready;
-    public EGameState State => _state;
+    public event Action<EGameState> OnStateChanged;
+    public EGameState State
+    {
+        get => _state;
+        private set
+        {
+            if (_state != value)
+            {
+                _state = value;
+                OnStateChanged?.Invoke(_state);
+            }
+        }
+    }
 
     [SerializeField] private float _readyToPlayTime = 2f;
     [SerializeField] private float _playDelayTime = 0.5f;
@@ -25,6 +38,10 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        if (_player != null)
+        {
+            _player.OnPlayerDeathComplete += HandlePlayerDeath;
+        }
         SetState(EGameState.Ready);
         StartCoroutine(StartToPlay_Coroutine());
         Cursor.lockState = CursorLockMode.Confined; // 창 내부로 제한
@@ -78,5 +95,10 @@ public class GameManager : MonoBehaviour
         _stateTextUI.text = "시작!";
         yield return new WaitForSecondsRealtime(_playDelayTime);
         SetState(EGameState.Playing);
+    }
+
+    private void HandlePlayerDeath()
+    {
+        SetState(EGameState.GameOver);
     }
 }

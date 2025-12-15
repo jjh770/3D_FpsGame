@@ -22,7 +22,6 @@ public class PlayerMove_1 : PlayerComponent
     private void Update()
     {
         if (!CanExecute()) return;
-        if (GameManager.Instance.State != EGameState.Playing) return;
 
         _gravityController.UpdateGravity();
         MoveAction();

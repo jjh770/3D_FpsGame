@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 // 키보드를 누르면 캐릭터를 그 방향으로 이동 시키고 싶다
-public class PlayerMove_1 : MonoBehaviour
+public class PlayerMove_1 : PlayerComponent
 {
     [SerializeField] private CharacterMoveConfigSO _moveConfig;
     private CharacterController _controller;
@@ -10,8 +10,9 @@ public class PlayerMove_1 : MonoBehaviour
     private Camera _mainCamera;
     private int _jumpCount = 0;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         _controller = GetComponent<CharacterController>();
         _gravityController = GetComponent<GravityController>();
         _stats = GetComponent<PlayerStats>();
@@ -20,6 +21,9 @@ public class PlayerMove_1 : MonoBehaviour
 
     private void Update()
     {
+        if (!CanExecute()) return;
+        if (GameManager.Instance.State != EGameState.Playing) return;
+
         _gravityController.UpdateGravity();
         MoveAction();
         JumpAction();

@@ -4,6 +4,7 @@
 // 마우스를 조작하면 카메라를 그 방향으로 회전하고 싶다
 public class CameraRotate : MonoBehaviour
 {
+    [SerializeField] private Player _player;
     public float RotationSpeed = 200f; // 0 ~ 360;
 
     // 유니티는 0~360도 각도 체계이므로 우리가 따로 저장할 -360 ~ 360 체계로 누적할 변수
@@ -14,16 +15,24 @@ public class CameraRotate : MonoBehaviour
 
     private float _reboundX = 0;
     private float _reboundY = 0;
+    private bool _canRotate;
+    private void Start()
+    {
+        _canRotate = true;
+    }
     private void OnEnable()
     {
         WeaponEvents.OnReboundCamera += AddRebound; // 이벤트 구독
+        _player.OnPlayerDeath += HandleDeath;
     }
     private void OnDisable()
     {
         WeaponEvents.OnReboundCamera -= AddRebound; // 이벤트 해제
+        _player.OnPlayerDeath -= HandleDeath;
     }
     private void Update()
     {
+        if (!_canRotate) return;
         MouseInput();
         ApplyRotation();
         RecoverRebound();
@@ -66,5 +75,10 @@ public class CameraRotate : MonoBehaviour
 
         _reboundX += weaponRebound.x;
         _reboundY += weaponRebound.y;
+    }
+
+    private void HandleDeath()
+    {
+        _canRotate = false;
     }
 }

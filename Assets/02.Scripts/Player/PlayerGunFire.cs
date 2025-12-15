@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerGunFire : MonoBehaviour
+public class PlayerGunFire : PlayerComponent
 {
     // 마우스의 왼쪽 버튼을 누르면 바라보는 방향으로 총을 발사하고 싶다. (총을 발사하고 싶다)
     [Header("Weapons")]
@@ -9,7 +9,7 @@ public class PlayerGunFire : MonoBehaviour
 
     private Weapon _currentWeapon;
 
-    private void Awake()
+    protected override void Awake()
     {
         // 시작 시 모든 무기 비활성화
         foreach (var weapon in _weapons)
@@ -28,6 +28,8 @@ public class PlayerGunFire : MonoBehaviour
 
     private void Update()
     {
+        if (!CanExecute()) return;
+
         if (_currentWeapon == null) return;
 
         // 1. 마우스 왼쪽 버튼이 눌린다면

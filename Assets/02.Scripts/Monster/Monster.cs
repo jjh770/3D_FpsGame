@@ -1,33 +1,28 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 [RequireComponent(typeof(MonsterMove))]
-[RequireComponent(typeof(MonsterAI))]
+[RequireComponent(typeof(MonsterStateMachine))]
 [RequireComponent(typeof(MonsterStats))]
 [RequireComponent(typeof(MonsterCombat))]
 [RequireComponent(typeof(MonsterPatrol))]
+[RequireComponent(typeof(MonsterJump))]
+[RequireComponent(typeof(MonsterSensor))]
+[RequireComponent(typeof(NavMeshAgent))]
+
 public class Monster : MonoBehaviour, IDamageable, IKnockbackable
 {
-    [SerializeField] private Transform _mouth;
     private MonsterCombat _combat;
-    private MonsterAI _ai;
-    private Quaternion _startRotation;
-    private Quaternion _mouthRotation = Quaternion.Euler(new Vector3(-60f, 0, 0));
-    private float _rotationSpeed = 0.5f;
-    private Coroutine _currentMouthCoroutine;
+
+    private Tween _fallRotateTween;
+    private Tween _fallMoveTween;
 
     private void Awake()
     {
         _combat = GetComponent<MonsterCombat>();
-        _ai = GetComponent<MonsterAI>();
-
         _combat.OnDeath += HandleDeath;
-        _combat.OnHit += HandleHit;
-    }
-
-    private void Start()
-    {
-        _startRotation = _mouth.transform.localRotation;
     }
 
     public bool TryTakeDamage(float damage)
@@ -42,45 +37,25 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable
 
     private void HandleDeath()
     {
-        Debug.Log($"{gameObject.name} 사망!");
-        // 생명주기 관리
+        StartCoroutine(FallMonster());
+    }
+
+    private IEnumerator FallMonster()
+    {
+        // 오른쪽 or 왼쪽으로 쓰러지기 (90도 회전)
+        float fallDirection = UnityEngine.Random.value > 0.5f ? 90f : -90f;
+
+        _fallRotateTween?.Kill();
+        _fallRotateTween = transform.DORotate(new Vector3(0, 0, fallDirection), 1f)
+            .SetEase(Ease.InQuad);
+
+        // 약간 아래로도 이동 (선택사항)
+        _fallMoveTween?.Kill();
+        _fallMoveTween = transform.DOMoveY(transform.position.y - 0.5f, 1f)
+            .SetEase(Ease.InQuad);
+
+        yield return new WaitForSeconds(2f);
         Destroy(gameObject);
-    }
-
-    private void HandleHit()
-    {
-        SetMouthRotation(_mouthRotation);
-    }
-
-    private void SetMouthRotation(Quaternion targetRotation)
-    {
-        if (Quaternion.Angle(_mouth.localRotation, targetRotation) < 0.1f)
-            return;
-
-        if (_currentMouthCoroutine != null)
-            StopCoroutine(_currentMouthCoroutine);
-
-        _currentMouthCoroutine = StartCoroutine(RotateMouth(targetRotation));
-    }
-
-    private IEnumerator RotateMouth(Quaternion targetRotation)
-    {
-        float elapsed = 0f;
-        float duration = 1f / _rotationSpeed;
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            _mouth.localRotation = Quaternion.Slerp(
-                _startRotation,
-                targetRotation,
-                elapsed / duration
-            );
-            yield return null;
-        }
-
-        _mouth.localRotation = targetRotation;
-        _currentMouthCoroutine = null;
     }
 
     private void OnDestroy()
@@ -88,7 +63,6 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable
         if (_combat != null)
         {
             _combat.OnDeath -= HandleDeath;
-            _combat.OnHit -= HandleHit;
         }
     }
 }

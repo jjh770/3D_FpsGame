@@ -68,9 +68,10 @@ Both Player and Monster entities use composition with specialized components:
 **Monster Components:**
 - `Monster` (main): Implements `IDamageable`, `IKnockbackable`
 - `MonsterAI`: State machine (Idle, Patrol, Trace, Comeback, Attack, Hit, Death)
-- `MonsterMove`: Movement logic
+- `MonsterMove`: NavMesh-based movement with knockback support
 - `MonsterCombat`: Combat and damage handling
 - `MonsterStats`: Stats using ValueStat system
+- `MonsterPatrol`: Patrol point management
 
 #### ScriptableObject-Based Configuration
 Configuration is separated using ScriptableObjects:
@@ -188,7 +189,9 @@ Use existing stat types from `Assets/02.Scripts/Stat/`:
 ## Current Development Status
 
 Based on recent commits:
-- Patrol state for monsters is in development (branch: `JJH_Patrol`)
-- Bomb knockback system recently implemented
+- **Monster movement refactored to NavMesh**: Migrated from CharacterController to NavMeshAgent for AI pathfinding
+- Patrol state for monsters implemented with MonsterPatrol component
+- Bomb knockback system implemented with NavMeshAgent integration
 - Monster responsibility separation refactoring completed
 - Gravity and consumable stat configs separated
+- WeaponEvents refactored from static to ScriptableObject-based event system with auto-loading

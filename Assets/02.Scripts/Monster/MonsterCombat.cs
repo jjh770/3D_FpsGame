@@ -11,7 +11,6 @@ public class MonsterCombat : MonoBehaviour
 
     private Player _player;
     private MonsterStats _stats;
-    private MonsterAI _ai;
     private MonsterMove _move;
     private float _attackTimer = 0f;
     private bool _isInvincible = false; // 무적 상태
@@ -24,7 +23,6 @@ public class MonsterCombat : MonoBehaviour
     private void Awake()
     {
         _stats = GetComponent<MonsterStats>();
-        _ai = GetComponent<MonsterAI>();
         _move = GetComponent<MonsterMove>();
     }
 
@@ -75,10 +73,10 @@ public class MonsterCombat : MonoBehaviour
             return false;
         }
 
-        if (_ai.State == EMonsterState.Hit || _ai.State == EMonsterState.Death)
-        {
-            return false;
-        }
+        //if (_ai.State == EMonsterState.Hit || _ai.State == EMonsterState.Death)
+        //{
+        //    return false;
+        //}
 
         if (_stats.Health.TryConsume(damage))
         {

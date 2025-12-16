@@ -127,8 +127,6 @@ public class Weapon : MonoBehaviour, IWeapon
         if (isHit)
         {
             // 충돌했다면 피격 이펙트 표시
-            Debug.Log(hitInfo.transform.name);
-
             // hitInfo.point: 부딪힌 위치
             _hitEffectVFX.transform.position = hitInfo.point;
             // hitInfo.normal: 법선벡터 (튕겨져 나오는 방향)

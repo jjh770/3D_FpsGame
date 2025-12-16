@@ -14,7 +14,8 @@ public class ConsumableStat
     public float MaxValue => _maxValue;
     public float Value => _value;
 
-    public event Action<float, float> OnValueChanged; // (current, max)
+    // 현재 체력과 최대 체력을 전달
+    public event Action<float, float> OnValueChanged;
 
     public void Initialize()
     {
@@ -43,7 +44,6 @@ public class ConsumableStat
     }
     public void SetValue(float value)
     {
-        _value = value;
         _value = Mathf.Clamp(value, 0, _maxValue);
         OnValueChanged?.Invoke(_value, _maxValue);
     }
@@ -51,7 +51,6 @@ public class ConsumableStat
     {
         if (_value >= _maxValue) return;
 
-        float oldValue = _value;
         _value = Mathf.Min(_value + _regenValue * time, _maxValue);
         OnValueChanged?.Invoke(_value, _maxValue);
     }

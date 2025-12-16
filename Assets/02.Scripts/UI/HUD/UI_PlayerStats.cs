@@ -51,37 +51,32 @@ public class UI_PlayerStats : MonoBehaviour
         _healthTween?.Kill();
         _healthDelayTween?.Kill();
         _staminaTween?.Kill();
+        _staminaDelayTween?.Kill();
+    }
+
+    private void UpdateSlider(float current, float max, Slider mainSlider, Image delayFill, ref Tweener mainTween, ref Tweener delayTween)
+    {
+        float targetValue = max > 0 ? current / max : 0;
+
+        mainTween?.Kill();
+        mainTween = mainSlider.DOValue(targetValue, _mainSliderDuration)
+            .SetEase(_mainEase);
+
+        if (delayFill != null)
+        {
+            delayTween?.Kill();
+            delayTween = delayFill.DOFillAmount(targetValue, _delayFillDuration)
+                .SetEase(_delayEase);
+        }
     }
 
     private void UpdateHealthSlider(float current, float max)
     {
-        float targetValue = max > 0 ? current / max : 0;
-
-        _healthTween?.Kill();
-        _healthTween = _healthSlider.DOValue(targetValue, _mainSliderDuration)
-            .SetEase(_mainEase);
-
-        if (_healthDelayFill != null)
-        {
-            _healthDelayTween?.Kill();
-            _healthDelayTween = _healthDelayFill.DOFillAmount(targetValue, _delayFillDuration)
-                .SetEase(_delayEase);
-        }
+        UpdateSlider(current, max, _healthSlider, _healthDelayFill, ref _healthTween, ref _healthDelayTween);
     }
 
     private void UpdateStaminaSlider(float current, float max)
     {
-        float targetValue = max > 0 ? current / max : 0;
-
-        _staminaTween?.Kill();
-        _staminaTween = _staminaSlider.DOValue(targetValue, _mainSliderDuration)
-            .SetEase(_mainEase);
-
-        if (_staminaDelayFill != null)
-        {
-            _staminaDelayTween?.Kill();
-            _staminaDelayTween = _staminaDelayFill.DOFillAmount(targetValue, _delayFillDuration)
-                .SetEase(_delayEase);
-        }
+        UpdateSlider(current, max, _staminaSlider, _staminaDelayFill, ref _staminaTween, ref _staminaDelayTween);
     }
 }

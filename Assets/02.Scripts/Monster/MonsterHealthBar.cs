@@ -5,7 +5,6 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Monster))]
 public class MonsterHealthBar : MonoBehaviour
 {
-    private Monster _monster;
     private MonsterStats _stats;
     private MonsterCombat _combat;
     [SerializeField] private Image _fillImage;
@@ -22,7 +21,6 @@ public class MonsterHealthBar : MonoBehaviour
 
     private void Awake()
     {
-        _monster = GetComponent<Monster>();
         _stats = GetComponent<MonsterStats>();
         _combat = GetComponent<MonsterCombat>();
         _mainCamera = Camera.main;
@@ -50,5 +48,13 @@ public class MonsterHealthBar : MonoBehaviour
         // UI 가 알고있는 몬스터 체력값과 다를 때만 fillAmount를 수정한다.
         // 빌보드 기법 : 카메라의 위치와 회전에 상관없이 항상 정면을 바라보게 하는 기법
         _healthBarTransform.forward = _mainCamera.transform.forward;
+    }
+
+    private void OnDestroy()
+    {
+        if (_combat != null)
+        {
+            _combat.OnHit -= OnHitMonster;
+        }
     }
 }

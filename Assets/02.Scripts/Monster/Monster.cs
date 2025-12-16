@@ -8,7 +8,6 @@ using UnityEngine;
 [RequireComponent(typeof(MonsterPatrol))]
 public class Monster : MonoBehaviour, IDamageable, IKnockbackable
 {
-    [SerializeField] private Player _player;
     [SerializeField] private Transform _mouth;
     private MonsterCombat _combat;
     private MonsterAI _ai;
@@ -21,9 +20,6 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable
     {
         _combat = GetComponent<MonsterCombat>();
         _ai = GetComponent<MonsterAI>();
-
-        _combat.Initialize(_player);
-        _ai.Initialize(_player);
 
         _combat.OnDeath += HandleDeath;
         _combat.OnHit += HandleHit;

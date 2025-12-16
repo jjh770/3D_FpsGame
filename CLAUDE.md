@@ -58,7 +58,7 @@ Both Player and Monster entities use composition with specialized components:
 
 **Player Components:**
 - `Player` (main): Implements `IDamageable`, coordinates components
-- `PlayerMove_1`: Movement and jumping (uses `CharacterController`)
+- `PlayerMove`: Movement and jumping (uses `CharacterController`)
 - `PlayerGunFire`: Gun weapon firing
 - `PlayerBombs`: Bomb throwing
 - `PlayerStats`: Health, stamina, ammo tracking

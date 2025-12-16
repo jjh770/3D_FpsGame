@@ -5,19 +5,27 @@ using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerStats))]
-[RequireComponent(typeof(PlayerMove_1))]
+[RequireComponent(typeof(PlayerMove))]
 public class Player : MonoBehaviour, IDamageable
 {
-    private PlayerMove_1 _move;
-    private PlayerGunFire _gunFire;
+    [SerializeField] private PlayerReferenceSO _playerReference;
+
     private PlayerStats _stats;
     public event Action OnHitPlayer;
     public event Action OnPlayerDeath;
     public event Action OnPlayerDeathComplete;
+
+    private Tween _fallRotateTween;
+    private Tween _fallMoveTween;
+
     private void Awake()
     {
-        _move = GetComponent<PlayerMove_1>();
-        _gunFire = GetComponent<PlayerGunFire>();
+        // PlayerReferenceSO에 자신을 등록
+        if (_playerReference != null)
+        {
+            _playerReference.Current = this;
+        }
+
         _stats = GetComponent<PlayerStats>();
     }
 
@@ -46,11 +54,25 @@ public class Player : MonoBehaviour, IDamageable
         // 오른쪽 or 왼쪽으로 쓰러지기 (90도 회전)
         float fallDirection = UnityEngine.Random.value > 0.5f ? 90f : -90f;
 
-        transform.DORotate(new Vector3(0, 0, fallDirection), 1f)
+        _fallRotateTween?.Kill();
+        _fallRotateTween = transform.DORotate(new Vector3(0, 0, fallDirection), 1f)
             .SetEase(Ease.InQuad);
 
         // 약간 아래로도 이동 (선택사항)
-        transform.DOMoveY(transform.position.y - 0.5f, 1f)
+        _fallMoveTween?.Kill();
+        _fallMoveTween = transform.DOMoveY(transform.position.y - 0.5f, 1f)
             .SetEase(Ease.InQuad);
+    }
+
+    private void OnDestroy()
+    {
+        // PlayerReferenceSO 참조 해제
+        if (_playerReference != null && _playerReference.Current == this)
+        {
+            _playerReference.Current = null;
+        }
+
+        _fallRotateTween?.Kill();
+        _fallMoveTween?.Kill();
     }
 }

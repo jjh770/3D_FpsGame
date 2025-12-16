@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
 public class MonsterMove : MonoBehaviour
 {
     private CharacterController _controller;
+    private NavMeshAgent _agent;
     private GravityController _gravityController;
     private Vector3 _knockbackVelocity;
     // 최소 넉백 속도 (이거 안넘으면 넉백안됨)
@@ -19,9 +21,15 @@ public class MonsterMove : MonoBehaviour
     private void Awake()
     {
         _controller = GetComponent<CharacterController>();
+        _agent = GetComponent<NavMeshAgent>();
         _gravityController = GetComponent<GravityController>();
     }
 
+    private void Start()
+    {
+        // _agent.speed = MoveSpeed;
+        // _agent.stoppingDistance = AttackDistance;
+    }
     private void Update()
     {
         _gravityController.UpdateGravity();
@@ -35,6 +43,23 @@ public class MonsterMove : MonoBehaviour
 
         // 3. 상태별 이동
         totalMovement += _stateMovement;
+
+        // 방향 설정 필요 없이 도착지만 설정하면 네비게이션 시스템에 의해 자동으로 이동한다.
+        // _agent.SetDestination(_player.transform.position);
+        // _agent.destination = _playter.transform.position;
+
+        //if (_agent.isOnOffMeshLink)
+        //{
+        //    Debug.Log("링크를 만남");
+        //    OffMeshLinkData linkData = _agent.currentOffMeshLinkData;
+        //    Vector3 start = linkData.startPos;
+        //    Vector3 end = linkData.endPos;
+        //    if (end.y > start.y)
+        //    {
+        //        State = EMonsterState.Jump;
+        //        return;
+        //    }
+        //}
 
         // 4. 이동
         _controller.Move(totalMovement * Time.deltaTime);

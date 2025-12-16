@@ -24,19 +24,27 @@ public class CameraRotate : MonoBehaviour
     [SerializeField] private float _deathCameraDistance = 2f; // 뒤로 물러날 거리
 
     private bool _isDeathCamera = false;
+    private Camera _camera;
 
     private void Start()
     {
         _canRotate = true;
+        _camera = GetComponent<Camera>();
     }
     private void OnEnable()
     {
-        WeaponEvents.OnReboundCamera += AddRebound; // 이벤트 구독
+        if (WeaponEventChannelSO.Instance != null)
+        {
+            WeaponEventChannelSO.Instance.OnReboundCamera += AddRebound; // 이벤트 구독
+        }
         _player.OnPlayerDeath += HandleDeath;
     }
     private void OnDisable()
     {
-        WeaponEvents.OnReboundCamera -= AddRebound; // 이벤트 해제
+        if (WeaponEventChannelSO.Instance != null)
+        {
+            WeaponEventChannelSO.Instance.OnReboundCamera -= AddRebound; // 이벤트 해제
+        }
         _player.OnPlayerDeath -= HandleDeath;
     }
     private void Update()
@@ -97,8 +105,7 @@ public class CameraRotate : MonoBehaviour
     private void HandleDeath()
     {
         _canRotate = false;
-        Camera cam = gameObject.GetComponent<Camera>();
-        cam.cullingMask |= (1 << LayerMask.NameToLayer("Player"));
+        _camera.cullingMask |= (1 << LayerMask.NameToLayer("Player"));
         StartCoroutine(DeathCameraAnimation());
     }
     private IEnumerator DeathCameraAnimation()

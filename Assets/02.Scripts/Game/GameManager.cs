@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
             {
                 _state = value;
                 OnStateChanged?.Invoke(_state);
+                HandleGameState();
             }
         }
     }
@@ -44,14 +45,13 @@ public class GameManager : MonoBehaviour
         }
         SetState(EGameState.Ready);
         StartCoroutine(StartToPlay_Coroutine());
-        Cursor.lockState = CursorLockMode.Confined; // 창 내부로 제한
-        Cursor.visible = true; // 커서 표시
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
     }
 
     public void SetState(EGameState newState)
     {
-        _state = newState;
-        HandleGameState();
+        State = newState;
     }
 
     private void HandleGameState()

@@ -95,7 +95,7 @@ public class Weapon : MonoBehaviour, IWeapon
     private IEnumerator ReloadBullet()
     {
         _isReloading = true;
-        WeaponEvents.TriggerReload(_weaponData.ReloadTime);
+        WeaponEventChannelSO.Instance?.RaiseReload(_weaponData.ReloadTime);
         yield return new WaitForSeconds(_weaponData.ReloadTime);
 
         int currentBullet = _bulletCount.CurrentCount;
@@ -152,11 +152,11 @@ public class Weapon : MonoBehaviour, IWeapon
         Vector3 rebound = _weaponData.CalculateRebound();
 
         // 이벤트로 반동 전달 (CameraRotate에서 받음)
-        WeaponEvents.TriggerRebound(rebound);
+        WeaponEventChannelSO.Instance?.RaiseReboundCamera(rebound);
     }
 
     private void BulletUIChange()
     {
-        WeaponEvents.TriggerAmmoChanged(_bulletCount.CurrentCount, _bulletClipCount.CurrentCount);
+        WeaponEventChannelSO.Instance?.RaiseAmmoChanged(_bulletCount.CurrentCount, _bulletClipCount.CurrentCount);
     }
 }

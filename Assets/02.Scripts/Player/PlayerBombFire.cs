@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PlayerBombFire : MonoBehaviour
+public class PlayerBombFire : PlayerComponent
 {
     // 마우스 오른쪽 버튼을 누르면 카메라(플레이어)가 바라보는 방향으로 폭탄을 던지고 싶음
 
@@ -11,12 +11,14 @@ public class PlayerBombFire : MonoBehaviour
     [SerializeField] private Transform _fireTransform;
     [SerializeField] private Bomb _bombPrefab;
     [SerializeField] private float _throwPower = 15f;
-    private PlayerBombs _playerBombs;
+
+    private PlayerStats _stats;
     private Camera _mainCamera;
 
-    private void Awake()
+    protected override void Awake()
     {
-        _playerBombs = GetComponent<PlayerBombs>();
+        base.Awake();
+        _stats = GetComponent<PlayerStats>();
         _mainCamera = Camera.main;
     }
     private void Start()
@@ -25,11 +27,13 @@ public class PlayerBombFire : MonoBehaviour
     }
     private void Update()
     {
+        if (!CanExecute()) return;
+
         if (Input.GetMouseButtonDown(1))
         {
-            if (_playerBombs.BombCount.IsEmpty()) return;
+            if (_stats.BombCount.IsEmpty()) return;
 
-            _playerBombs.BombCount.TryConsume();
+            _stats.BombCount.TryConsume();
             BombUIChange();
             GameObject bomb = ObjectPool.Instance.Spawn(_bombPrefab.gameObject, _fireTransform.position, Quaternion.identity);
             Rigidbody bombRigidbody = bomb.GetComponent<Rigidbody>();
@@ -39,6 +43,6 @@ public class PlayerBombFire : MonoBehaviour
 
     private void BombUIChange()
     {
-        WeaponEvents.TriggerConsumableChanged(_playerBombs.BombCount.CurrentCount);
+        WeaponEventChannelSO.Instance?.RaiseConsumableChanged(_stats.BombCount.CurrentCount);
     }
 }

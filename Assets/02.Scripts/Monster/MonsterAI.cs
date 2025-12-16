@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class MonsterAI : MonoBehaviour
 {
+    [SerializeField] private PlayerReferenceSO _playerReference;
     [SerializeField] private EMonsterState _state = EMonsterState.Ready;
 
     private Player _player;
@@ -19,7 +20,8 @@ public class MonsterAI : MonoBehaviour
 
     [SerializeField] private float _readyTimer = 3f;
     [SerializeField] private float _patrolTimer = 1f;
-    private float _timer;
+    private float _readyStateTimer;
+    private float _idleStateTimer;
     private bool _isPlayerDeath = false;
 
     public EMonsterState State => _state;
@@ -46,6 +48,16 @@ public class MonsterAI : MonoBehaviour
     }
     private void Start()
     {
+        // PlayerReferenceSO에서 Player 가져오기
+        if (_playerReference != null)
+        {
+            _player = _playerReference.Current;
+            if (_player != null)
+            {
+                _player.OnPlayerDeath += HandleDeath;
+            }
+        }
+
         StartCoroutine(CheckDistance());
     }
     private void Update()
@@ -58,14 +70,6 @@ public class MonsterAI : MonoBehaviour
         }
         _combat.UpdateAttackTimer(Time.deltaTime);
         HandleMonsterState();
-    }
-    public void Initialize(Player player)
-    {
-        _player = player;
-        if (_player != null)
-        {
-            _player.OnPlayerDeath += HandleDeath;
-        }
     }
     public void SetState(EMonsterState newState)
     {
@@ -108,10 +112,10 @@ public class MonsterAI : MonoBehaviour
     }
     private void Ready()
     {
-        _timer += Time.deltaTime;
-        if (_timer >= _readyTimer)
+        _readyStateTimer += Time.deltaTime;
+        if (_readyStateTimer >= _readyTimer)
         {
-            _timer = 0;
+            _readyStateTimer = 0;
             _state = EMonsterState.Idle;
         }
     }
@@ -125,10 +129,10 @@ public class MonsterAI : MonoBehaviour
             return;
         }
 
-        _timer += Time.deltaTime;
-        if (_timer >= _patrolTimer)
+        _idleStateTimer += Time.deltaTime;
+        if (_idleStateTimer >= _patrolTimer)
         {
-            _timer = 0;
+            _idleStateTimer = 0;
             // ResetPatrol() 제거 - 이전 패트롤 위치 유지
             _state = EMonsterState.Patrol;
             Debug.Log($"{gameObject.name} - Idle에서 Patrol로 전환 (이전 위치에서 재개)");
@@ -230,7 +234,6 @@ public class MonsterAI : MonoBehaviour
     {
         if (_distanceToInit > 0.5f)
         {
-            _direction = (_initPosition - transform.position).normalized;
             _monsterMove.Move(_direction, _stats.MoveSpeed.Value);
         }
     }
@@ -243,12 +246,16 @@ public class MonsterAI : MonoBehaviour
 
             _distanceToInit = Vector3.Distance(transform.position, _initPosition);
             _distance = Vector3.Distance(transform.position, _player.transform.position);
-            if (_state == EMonsterState.Comeback)
+
+            // Comeback이나 PlayerDead 상태일 때는 스폰 위치 방향, 그 외에는 플레이어 방향
+            if (_state == EMonsterState.Comeback || _state == EMonsterState.PlayerDead)
             {
                 _direction = (_initPosition - transform.position).normalized;
-                continue;
             }
-            _direction = (_player.transform.position - transform.position).normalized;
+            else
+            {
+                _direction = (_player.transform.position - transform.position).normalized;
+            }
         }
     }
 

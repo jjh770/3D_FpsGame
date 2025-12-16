@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MonsterCombat : MonoBehaviour
 {
+    [SerializeField] private PlayerReferenceSO _playerReference;
     [SerializeField] private ParticleSystem _attackEffectVFX;
     [SerializeField] private Transform _attackTransform;
     [SerializeField] private float _hitInvincibilityTime = 0.2f;
@@ -27,9 +28,13 @@ public class MonsterCombat : MonoBehaviour
         _move = GetComponent<MonsterMove>();
     }
 
-    public void Initialize(Player player)
+    private void Start()
     {
-        _player = player;
+        // PlayerReferenceSO에서 Player 가져오기
+        if (_playerReference != null)
+        {
+            _player = _playerReference.Current;
+        }
     }
 
     public bool CanAttack()
@@ -64,6 +69,12 @@ public class MonsterCombat : MonoBehaviour
 
     public bool TryTakeDamage(float damage)
     {
+        // 무적 상태 체크
+        if (_isInvincible)
+        {
+            return false;
+        }
+
         if (_ai.State == EMonsterState.Hit || _ai.State == EMonsterState.Death)
         {
             return false;

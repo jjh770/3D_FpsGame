@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class MonsterAI : MonoBehaviour
 {
-    [SerializeField] private EMonsterState _state = EMonsterState.Idle;
+    [SerializeField] private EMonsterState _state = EMonsterState.Ready;
 
     private Player _player;
     private MonsterMove _monsterMove;
@@ -17,8 +17,10 @@ public class MonsterAI : MonoBehaviour
     private Vector3 _direction;
     private float _checkDistanceInterval = 0.2f;
 
+    [SerializeField] private float _readyTimer = 3f;
     [SerializeField] private float _patrolTimer = 1f;
     private float _timer;
+    private bool _isPlayerDeath = false;
 
     public EMonsterState State => _state;
 
@@ -35,6 +37,13 @@ public class MonsterAI : MonoBehaviour
         _combat.OnHit += HandleHit;
         _patrol.OnPatrolCycleComplete += HandlePatrolCycleComplete;
     }
+    private void OnDisable()
+    {
+        if (_player != null)
+        {
+            _player.OnPlayerDeath -= HandleDeath;
+        }
+    }
     private void Start()
     {
         StartCoroutine(CheckDistance());
@@ -42,13 +51,21 @@ public class MonsterAI : MonoBehaviour
     private void Update()
     {
         if (_monsterMove.IsKnockedBack) return;
-
+        if (_isPlayerDeath)
+        {
+            SetState(EMonsterState.PlayerDead);
+            return;
+        }
         _combat.UpdateAttackTimer(Time.deltaTime);
         HandleMonsterState();
     }
     public void Initialize(Player player)
     {
         _player = player;
+        if (_player != null)
+        {
+            _player.OnPlayerDeath += HandleDeath;
+        }
     }
     public void SetState(EMonsterState newState)
     {
@@ -60,6 +77,9 @@ public class MonsterAI : MonoBehaviour
         // 몬스터의 상태에 따라 다른 행동을 한다. (다른 메서드를 호출한다.)
         switch (_state)
         {
+            case EMonsterState.Ready:
+                Ready();
+                break;
             case EMonsterState.Idle:
                 Idle();
                 break;
@@ -81,9 +101,20 @@ public class MonsterAI : MonoBehaviour
             case EMonsterState.Death:
                 Death();
                 break;
+            case EMonsterState.PlayerDead:
+                PlayerDead();
+                break;
         }
     }
-
+    private void Ready()
+    {
+        _timer += Time.deltaTime;
+        if (_timer >= _readyTimer)
+        {
+            _timer = 0;
+            _state = EMonsterState.Idle;
+        }
+    }
     private void Idle()
     {
         // 대기하는 상태
@@ -195,6 +226,15 @@ public class MonsterAI : MonoBehaviour
         // 코루틴에서 자동으로 OnDeath 이벤트 발생 → Monster에서 Destroy 처리
     }
 
+    private void PlayerDead()
+    {
+        if (_distanceToInit > 0.5f)
+        {
+            _direction = (_initPosition - transform.position).normalized;
+            _monsterMove.Move(_direction, _stats.MoveSpeed.Value);
+        }
+    }
+
     private IEnumerator CheckDistance()
     {
         while (true)
@@ -250,5 +290,10 @@ public class MonsterAI : MonoBehaviour
         {
             _patrol.OnPatrolCycleComplete -= HandlePatrolCycleComplete;
         }
+    }
+
+    private void HandleDeath()
+    {
+        _isPlayerDeath = true;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -35,7 +36,21 @@ public class Player : MonoBehaviour, IDamageable
     {
         // 플레이어 입력 비활성화
         OnPlayerDeath?.Invoke();
+        FallPlayer();
         yield return new WaitForSeconds(2f); // 사망 연출 대기
         OnPlayerDeathComplete?.Invoke();
+    }
+
+    private void FallPlayer()
+    {
+        // 오른쪽 or 왼쪽으로 쓰러지기 (90도 회전)
+        float fallDirection = UnityEngine.Random.value > 0.5f ? 90f : -90f;
+
+        transform.DORotate(new Vector3(0, 0, fallDirection), 1f)
+            .SetEase(Ease.InQuad);
+
+        // 약간 아래로도 이동 (선택사항)
+        transform.DOMoveY(transform.position.y - 0.5f, 1f)
+            .SetEase(Ease.InQuad);
     }
 }

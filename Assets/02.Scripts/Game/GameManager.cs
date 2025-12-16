@@ -72,14 +72,12 @@ public class GameManager : MonoBehaviour
 
     private void Ready()
     {
-        Time.timeScale = 0f;
         _stateTextUI.gameObject.SetActive(true);
         _stateTextUI.text = "준비중..";
     }
 
     private void Playing()
     {
-        Time.timeScale = 1f;
         _stateTextUI.gameObject.SetActive(false);
     }
 
@@ -91,9 +89,9 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator StartToPlay_Coroutine()
     {
-        yield return new WaitForSecondsRealtime(_readyToPlayTime);
+        yield return new WaitForSeconds(_readyToPlayTime);
         _stateTextUI.text = "시작!";
-        yield return new WaitForSecondsRealtime(_playDelayTime);
+        yield return new WaitForSeconds(_playDelayTime);
         SetState(EGameState.Playing);
     }
 

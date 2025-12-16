@@ -1,5 +1,6 @@
 ﻿public enum EMonsterState
 {
+    Ready,
     Idle,
     Patrol,
     Trace,
@@ -7,4 +8,5 @@
     Attack,
     Hit,
     Death,
+    PlayerDead,
 }

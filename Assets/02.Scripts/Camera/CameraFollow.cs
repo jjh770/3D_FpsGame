@@ -29,6 +29,8 @@ public class CameraFollow : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (!(GameManager.Instance.State == EGameState.Playing)) return;
+
         if (!_canRotateCamera) return;
 
         if (Input.GetKeyDown(KeyCode.T))

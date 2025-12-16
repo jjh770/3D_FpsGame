@@ -1095,6 +1095,9 @@ MonoBehaviour:
   _player: {fileID: 851221438}
   RotationSpeed: 200
   _reboundSmoothness: 10
+  _deathCameraHeight: 3
+  _deathCameraDuration: 2
+  _deathCameraDistance: 2
 --- !u!114 &330585549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2046,10 +2049,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97e682b5ce7ba974ca43c74d0f430dab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 0}
+  _player: {fileID: 851221438}
   _stateTextUI: {fileID: 281543196}
-  _readyToPlayTime: 0
-  _playDelayTime: 0
+  _readyToPlayTime: 2
+  _playDelayTime: 0.5
 --- !u!1 &736599650
 GameObject:
   m_ObjectHideFlags: 0
@@ -6246,6 +6249,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 58287425075899346, guid: 4555f8767fb8d4d41a78c08905491bca, type: 3}
+      propertyPath: _attackDamage._value
+      value: 24
+      objectReference: {fileID: 0}
     - target: {fileID: 523262679126717439, guid: 4555f8767fb8d4d41a78c08905491bca, type: 3}
       propertyPath: m_Color.b
       value: 0

@@ -6,12 +6,14 @@ public class MonsterCombat : MonoBehaviour
 {
     [SerializeField] private ParticleSystem _attackEffectVFX;
     [SerializeField] private Transform _attackTransform;
+    [SerializeField] private float _hitInvincibilityTime = 0.2f;
 
     private Player _player;
     private MonsterStats _stats;
     private MonsterAI _ai;
     private MonsterMove _move;
     private float _attackTimer = 0f;
+    private bool _isInvincible = false; // 무적 상태
 
     public event Action OnDeath;
     public event Action OnHit;
@@ -86,8 +88,12 @@ public class MonsterCombat : MonoBehaviour
 
     public IEnumerator Hit_Coroutine()
     {
-        yield return new WaitForSeconds(0.2f);
+        _isInvincible = true;
         OnHit?.Invoke();
+
+        yield return new WaitForSeconds(_hitInvincibilityTime);
+
+        _isInvincible = false;
     }
 
     public IEnumerator Death_Coroutine()

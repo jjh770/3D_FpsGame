@@ -1,6 +1,4 @@
-﻿using DG.Tweening;
-using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(MonsterMove))]
@@ -15,14 +13,17 @@ using UnityEngine.AI;
 public class Monster : MonoBehaviour, IDamageable, IKnockbackable
 {
     private MonsterCombat _combat;
-
-    private Tween _fallRotateTween;
-    private Tween _fallMoveTween;
+    private MonsterMove _move;
 
     private void Awake()
     {
         _combat = GetComponent<MonsterCombat>();
-        _combat.OnDeath += HandleDeath;
+        _move = GetComponent<MonsterMove>();
+    }
+
+    private void Start()
+    {
+        _move.OnDeathFinish += HandleDeathFinish;
     }
 
     public bool TryTakeDamage(float damage)
@@ -35,34 +36,13 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable
         _combat.TakeKnockback(direction, knockbackAmount);
     }
 
-    private void HandleDeath()
+    private void HandleDeathFinish()
     {
-        StartCoroutine(FallMonster());
-    }
-
-    private IEnumerator FallMonster()
-    {
-        // 오른쪽 or 왼쪽으로 쓰러지기 (90도 회전)
-        float fallDirection = UnityEngine.Random.value > 0.5f ? 90f : -90f;
-
-        _fallRotateTween?.Kill();
-        _fallRotateTween = transform.DORotate(new Vector3(0, 0, fallDirection), 1f)
-            .SetEase(Ease.InQuad);
-
-        // 약간 아래로도 이동 (선택사항)
-        _fallMoveTween?.Kill();
-        _fallMoveTween = transform.DOMoveY(transform.position.y - 0.5f, 1f)
-            .SetEase(Ease.InQuad);
-
-        yield return new WaitForSeconds(2f);
         Destroy(gameObject);
     }
 
     private void OnDestroy()
     {
-        if (_combat != null)
-        {
-            _combat.OnDeath -= HandleDeath;
-        }
+        _move.OnDeathFinish -= HandleDeathFinish;
     }
 }

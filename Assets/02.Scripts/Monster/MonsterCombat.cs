@@ -101,7 +101,7 @@ public class MonsterCombat : MonoBehaviour
 
     public IEnumerator Death_Coroutine()
     {
-        yield return new WaitForSeconds(0.5f);
         OnDeath?.Invoke();
+        yield return null;
     }
 }

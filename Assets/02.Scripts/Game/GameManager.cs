@@ -45,8 +45,7 @@ public class GameManager : MonoBehaviour
         }
         SetState(EGameState.Ready);
         StartCoroutine(StartToPlay_Coroutine());
-        Cursor.lockState = CursorLockMode.Confined;
-        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public void SetState(EGameState newState)

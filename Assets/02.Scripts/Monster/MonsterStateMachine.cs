@@ -58,7 +58,9 @@ public class MonsterStateMachine : MonoBehaviour
         _currentState = newState;
         _currentState?.Enter();
 
+#if UNITY_EDITOR
         Debug.Log($"[{gameObject.name}] State Changed: {newState.GetType().Name}");
+#endif
     }
 
     private void HandleDamageReceived()

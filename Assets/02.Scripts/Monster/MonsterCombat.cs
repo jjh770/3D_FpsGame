@@ -72,12 +72,6 @@ public class MonsterCombat : MonoBehaviour
         {
             return false;
         }
-
-        //if (_ai.State == EMonsterState.Hit || _ai.State == EMonsterState.Death)
-        //{
-        //    return false;
-        //}
-
         if (_stats.Health.TryConsume(damage))
         {
             OnDamageReceived?.Invoke();

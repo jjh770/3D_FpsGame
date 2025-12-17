@@ -97,7 +97,7 @@ public class MonsterMove : MonoBehaviour
         if (direction.sqrMagnitude > 0.01f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(
+            transform.rotation = Quaternion.RotateTowards(
                 transform.rotation,
                 targetRotation,
                 _rotationSpeed * Time.deltaTime

@@ -38,6 +38,16 @@ public class MonsterJump : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        _combat.OnHit += HandleCancelJump_Hit;
+        _combat.OnDeath += HandleCancelJump_Death;
+    }
+    private void OnDestroy()
+    {
+        _combat.OnHit -= HandleCancelJump_Hit;
+        _combat.OnDeath -= HandleCancelJump_Death;
+    }
     public void StartJump(OffMeshLinkData linkData)
     {
         if (_isJumping) return;
@@ -118,19 +128,42 @@ public class MonsterJump : MonoBehaviour
         OnJumpComplete?.Invoke();
     }
 
+    private void HandleCancelJump_Hit()
+    {
+        if (IsJumping)
+        {
+            CancelJump();
+        }
+    }
+    private void HandleCancelJump_Death()
+    {
+        if (IsJumping)
+        {
+            CancelJump();
+        }
+    }
+
     // 점프 중단 (필요 시)
-    public void CancelJump()
+    private void CancelJump()
     {
         if (_jumpCoroutine != null)
         {
             StopCoroutine(_jumpCoroutine);
             _jumpCoroutine = null;
         }
-
-        _isJumping = false;
+        // 현재 위치를 NavMesh에 동기화 (중요!)
+        _agent.Warp(transform.position);
 
         // NavMeshAgent 설정 복원
         _agent.updatePosition = true;
         _agent.isStopped = false;
+
+        // OffMeshLink 상태 정리
+        if (_agent.isOnOffMeshLink)
+        {
+            _agent.CompleteOffMeshLink();
+        }
+
+        _isJumping = false;
     }
 }

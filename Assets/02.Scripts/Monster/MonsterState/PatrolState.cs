@@ -28,7 +28,7 @@ public class PatrolState : MonsterStateBase
         _move.MoveTo(destination);
 
         // 목적지 도달 체크
-        if (_move.RemainingDistance <= 0.5f && _move.HasPath)
+        if (_move.RemainingDistance <= 0.2f && _move.HasPath)
         {
             _patrol.OnDestinationReached();
         }

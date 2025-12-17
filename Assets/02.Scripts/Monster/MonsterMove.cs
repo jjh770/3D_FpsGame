@@ -1,11 +1,12 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class MonsterMove : MonoBehaviour
 {
     private NavMeshAgent _agent;
-
     private MonsterCombat _combat;
     private CharacterController _controller;
     private GravityController _gravityController;
@@ -13,8 +14,8 @@ public class MonsterMove : MonoBehaviour
     private Vector3 _knockbackVelocity;
     private bool _wasOnOffMeshLink = false; // 이전 프레임의 OffMeshLink 상태
 
-
     public event Action<OffMeshLinkData> OnOffMeshLinkEntered;
+    public event Action OnDeathFinish;
 
     // 최소 넉백 속도 (이거 안넘으면 넉백안됨)
     [SerializeField] private float _minKnockbackVelocity = 0.1f;
@@ -25,7 +26,12 @@ public class MonsterMove : MonoBehaviour
     // 움직임 판정 기준
     [SerializeField] private float _moveSpeedThreshold = 0.1f;
 
+    private Tween _fallRotateTween;
+    private Tween _fallMoveTween;
+
     public bool IsKnockedBack => _knockbackVelocity.magnitude > _minKnockbackVelocity;
+    private bool _isDead = false;
+    private float _fallTime = 2f;
 
     private void Awake()
     {
@@ -40,19 +46,28 @@ public class MonsterMove : MonoBehaviour
         _agent.angularSpeed = _rotationSpeed * 60f; // degrees per second
         _agent.autoTraverseOffMeshLink = false; // OffMeshLink 수동 처리
     }
-
+    private void Start()
+    {
+        _combat.OnDeath += HandleDeathStart;
+    }
     private void Update()
     {
+        if (_isDead) return;
+
         // 넉백 중일 때는 NavMeshAgent 비활성화하고 수동 이동
         if (IsKnockedBack)
         {
-            _agent.enabled = false;
+            if (_agent.enabled)
+            {
+                _agent.enabled = false; // NavMesh 제어 끔
+            }
             ApplyKnockback();
         }
         else if (!_agent.enabled)
         {
             // 넉백이 끝나면 NavMeshAgent 다시 활성화
             _agent.enabled = true;
+            _agent.Warp(transform.position);
         }
         // 움직이는 경우 애니메이션 출력
         UpdateAnimation();
@@ -150,16 +165,74 @@ public class MonsterMove : MonoBehaviour
 
     public void TakeKnockBack(Vector3 direction, float knockbackAmount)
     {
+        direction.y = 0f;
         _knockbackVelocity = direction.normalized * knockbackAmount;
     }
 
     private void ApplyKnockback()
     {
-        // NavMeshAgent가 비활성화된 상태에서 수동 이동
-        transform.position += _knockbackVelocity * Time.deltaTime;
+        // 중력 업데이트
+        _gravityController.UpdateGravity();
 
-        // 넉백 속도를 점진적으로 감속
-        _knockbackVelocity = Vector3.Lerp(_knockbackVelocity, Vector3.zero, _knockbackDecay * Time.deltaTime);
+        // 넉백 이동 (수평) + 중력 (수직)
+        Vector3 movement = _knockbackVelocity * Time.deltaTime;
+        movement.y = _gravityController.YVelocity * Time.deltaTime;
+
+        // CharacterController로 이동 (충돌 감지 + 바닥 체크 자동)
+        _controller.Move(movement);
+
+        // 수평 속도만 감속
+        Vector3 horizontal = new Vector3(_knockbackVelocity.x, 0f, _knockbackVelocity.z);
+        horizontal = Vector3.Lerp(horizontal, Vector3.zero, _knockbackDecay * Time.deltaTime);
+        _knockbackVelocity.x = horizontal.x;
+        _knockbackVelocity.z = horizontal.z;
+
+        //// NavMeshAgent가 비활성화된 상태에서 수동 이동
+        //transform.position += _knockbackVelocity * Time.deltaTime;
+
+        //// 넉백 속도를 점진적으로 감속
+        //_knockbackVelocity = Vector3.Lerp(_knockbackVelocity, Vector3.zero, _knockbackDecay * Time.deltaTime);
+    }
+
+    private void HandleDeathStart()
+    {
+        _isDead = true;
+        _agent.enabled = false;
+        _knockbackVelocity = Vector3.zero;
+        StartCoroutine(FallMonster());
+    }
+
+    private IEnumerator FallMonster()
+    {
+        // 오른쪽 or 왼쪽으로 쓰러지기 (90도 회전)
+        float fallDirection = UnityEngine.Random.value > 0.5f ? 90f : -90f;
+
+        _fallRotateTween?.Kill();
+        _fallRotateTween = transform.DORotate(new Vector3(0, 0, fallDirection), 1f)
+            .SetEase(Ease.InQuad);
+
+        // 약간 아래로도 이동 (선택사항)
+        _fallMoveTween?.Kill();
+        _fallMoveTween = transform.DOMoveY(transform.position.y - 0.5f, 1f)
+            .SetEase(Ease.InQuad);
+
+        float fallTime = 0f;
+        while (fallTime < _fallTime)
+        {
+            // 중력 업데이트
+            _gravityController.UpdateGravity();
+
+            // 넉백 이동 (수평) + 중력 (수직)
+            Vector3 movement = _knockbackVelocity * Time.deltaTime;
+            movement.y = _gravityController.YVelocity * Time.deltaTime;
+
+            // CharacterController로 이동 (충돌 감지 + 바닥 체크 자동)
+            _controller.Move(movement);
+            fallTime += Time.deltaTime;
+
+            yield return null; // 다음 프레임까지 대기
+        }
+        OnDeathFinish?.Invoke();
     }
 
     // NavMeshAgent 속성 접근자

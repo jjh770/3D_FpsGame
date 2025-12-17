@@ -3,7 +3,7 @@
 public class PatrolState : MonsterStateBase
 {
     public PatrolState(MonsterStateMachine stateMachine) : base(stateMachine) { }
-
+    [SerializeField] private float _monsterSpeed = 1f;
     public override void Enter()
     {
         if (!_patrol.HasValidPatrolPoints())
@@ -11,6 +11,7 @@ public class PatrolState : MonsterStateBase
             Debug.LogWarning($"{_stateMachine.name} - 패트롤 포인트 없음!");
             _stateMachine.ChangeState(new IdleState(_stateMachine));
         }
+        _move.SetMoveSpeed(_monsterSpeed);
     }
 
     public override void Update()

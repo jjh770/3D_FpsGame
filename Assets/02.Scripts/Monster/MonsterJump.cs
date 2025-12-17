@@ -6,6 +6,8 @@ using UnityEngine.AI;
 public class MonsterJump : MonoBehaviour
 {
     private NavMeshAgent _agent;
+    private MonsterCombat _combat;
+    private Animator _animator;
 
     [Header("Jump Settings")]
     [SerializeField] private float _jumpHeight = 2f; // 점프 높이
@@ -22,6 +24,8 @@ public class MonsterJump : MonoBehaviour
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _combat = GetComponent<MonsterCombat>();
+        _animator = GetComponentInChildren<Animator>();
 
         // 기본 포물선 곡선 생성 (AnimationCurve가 설정되지 않았을 때)
         if (_jumpCurve == null || _jumpCurve.keys.Length == 0)
@@ -44,6 +48,10 @@ public class MonsterJump : MonoBehaviour
         }
 
         _jumpCoroutine = StartCoroutine(JumpCoroutine(linkData));
+    }
+    public void AnimTraceToJump()
+    {
+        _animator.SetTrigger("TraceToJump");
     }
 
     private IEnumerator JumpCoroutine(OffMeshLinkData linkData)

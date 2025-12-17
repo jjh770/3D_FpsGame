@@ -1,10 +1,13 @@
-﻿public class TraceState : MonsterStateBase
+﻿using UnityEngine;
+
+public class TraceState : MonsterStateBase
 {
     public TraceState(MonsterStateMachine stateMachine) : base(stateMachine) { }
-
+    [SerializeField] private float _monsterSpeed = 3.5f;
     public override void Enter()
     {
         _move.Resume();
+        _move.SetMoveSpeed(_monsterSpeed);
     }
 
     public override void Update()

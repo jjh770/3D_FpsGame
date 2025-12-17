@@ -12,6 +12,8 @@ public class MonsterCombat : MonoBehaviour
     private Player _player;
     private MonsterStats _stats;
     private MonsterMove _move;
+    private Animator _animator;
+
     private float _attackTimer = 0f;
     private bool _isInvincible = false; // 무적 상태
 
@@ -24,6 +26,7 @@ public class MonsterCombat : MonoBehaviour
     {
         _stats = GetComponent<MonsterStats>();
         _move = GetComponent<MonsterMove>();
+        _animator = GetComponentInChildren<Animator>();
     }
 
     private void Start()
@@ -40,29 +43,29 @@ public class MonsterCombat : MonoBehaviour
         return _attackTimer >= _stats.AttackCoolTime.Value;
     }
 
-    public void ExecuteAttack()
+    public void AnimExecuteAttack()
     {
         if (!CanAttack()) return;
 
+        _animator.SetTrigger("Attack");
         _attackTimer = 0f;
-        StartCoroutine(Attack_Coroutine());
+        //StartCoroutine(Attack_Coroutine());
     }
 
-    public void UpdateAttackTimer(float deltaTime)
-    {
-        _attackTimer += deltaTime;
-    }
-
-    private IEnumerator Attack_Coroutine()
+    public void AttackVFX()
     {
         Vector3 direction = (_player.transform.position - transform.position).normalized;
 
         _attackEffectVFX.transform.position = _attackTransform.position;
         _attackEffectVFX.transform.rotation = Quaternion.LookRotation(direction);
         _attackEffectVFX.Play();
-        _player.TryTakeDamage(_stats.AttackDamage.Value);
 
-        yield return new WaitForSeconds(1f);
+        _player.TryTakeDamage(_stats.AttackDamage.Value);
+    }
+
+    public void UpdateAttackTimer(float deltaTime)
+    {
+        _attackTimer += deltaTime;
     }
 
     public bool TryTakeDamage(float damage)

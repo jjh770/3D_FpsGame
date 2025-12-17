@@ -13,5 +13,6 @@ public class JumpState : MonsterStateBase
     public override void Enter()
     {
         _stateMachine.Jump.StartJump(_linkData);
+        _jump.AnimTraceToJump();
     }
 }

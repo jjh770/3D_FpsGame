@@ -13,6 +13,7 @@ public abstract class MonsterStateBase : IMonsterState
     protected MonsterStats _stats;
     protected MonsterPatrol _patrol;
     protected MonsterSensor _sensor;
+    protected MonsterJump _jump;
 
     public MonsterStateBase(MonsterStateMachine stateMachine)
     {
@@ -22,6 +23,7 @@ public abstract class MonsterStateBase : IMonsterState
         _stats = stateMachine.Stats;
         _patrol = stateMachine.Patrol;
         _sensor = stateMachine.Sensor;
+        _jump = stateMachine.Jump;
     }
 
     public virtual void Enter() { }

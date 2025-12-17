@@ -5,8 +5,14 @@ using UnityEngine.AI;
 public class MonsterMove : MonoBehaviour
 {
     private NavMeshAgent _agent;
+
+    private MonsterCombat _combat;
+    private CharacterController _controller;
+    private GravityController _gravityController;
+    private Animator _animator;
     private Vector3 _knockbackVelocity;
     private bool _wasOnOffMeshLink = false; // 이전 프레임의 OffMeshLink 상태
+
 
     public event Action<OffMeshLinkData> OnOffMeshLinkEntered;
 
@@ -16,12 +22,19 @@ public class MonsterMove : MonoBehaviour
     [SerializeField] private float _knockbackDecay = 5f;
     // 회전 속도
     [SerializeField] private float _rotationSpeed = 10f;
+    // 움직임 판정 기준
+    [SerializeField] private float _moveSpeedThreshold = 0.1f;
 
     public bool IsKnockedBack => _knockbackVelocity.magnitude > _minKnockbackVelocity;
 
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _combat = GetComponent<MonsterCombat>();
+        _controller = GetComponent<CharacterController>();
+        _gravityController = GetComponent<GravityController>();
+        _animator = GetComponentInChildren<Animator>();
+
         _agent.stoppingDistance = 0.2f; // 기본값: 목적지 근처에서 멈춤
         _agent.updateRotation = true; // NavMeshAgent가 자동 회전 처리
         _agent.angularSpeed = _rotationSpeed * 60f; // degrees per second
@@ -41,12 +54,27 @@ public class MonsterMove : MonoBehaviour
             // 넉백이 끝나면 NavMeshAgent 다시 활성화
             _agent.enabled = true;
         }
+        // 움직이는 경우 애니메이션 출력
+        UpdateAnimation();
 
         // OffMeshLink 감지
         if (_agent.enabled)
         {
             CheckOffMeshLink();
         }
+    }
+
+    private void UpdateAnimation()
+    {
+        if (!_agent.enabled) return;
+
+        // NavMeshAgent의 실제 속도로 애니메이션 제어
+        float currentSpeed = _agent.velocity.magnitude;
+        bool isTracing = currentSpeed > _moveSpeedThreshold;
+
+        // Bool 파라미터
+        _animator.SetBool("IsTracing", isTracing);
+        _animator.SetFloat("Speed", currentSpeed);
     }
 
     private void CheckOffMeshLink()
@@ -68,6 +96,7 @@ public class MonsterMove : MonoBehaviour
     {
         if (_agent.enabled && !IsKnockedBack)
         {
+            _agent.isStopped = false;
             _agent.SetDestination(destination);
         }
     }
@@ -86,6 +115,20 @@ public class MonsterMove : MonoBehaviour
         {
             _agent.isStopped = false;
         }
+    }
+
+    public void SetMoveSpeed(float monsterSpeed)
+    {
+        _agent.speed = monsterSpeed;
+    }
+
+    public void AnimTraceToAttack()
+    {
+        _animator.SetTrigger("TraceToAttackIdle");
+    }
+    public void AnimAttackToTrace()
+    {
+        _animator.SetTrigger("AttackIdleToTrace");
     }
 
     // 특정 위치를 바라보기 (Attack 상태에서 사용)

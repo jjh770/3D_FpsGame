@@ -1,11 +1,5 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(MonsterMove))]
-[RequireComponent(typeof(MonsterStats))]
-[RequireComponent(typeof(MonsterCombat))]
-[RequireComponent(typeof(MonsterPatrol))]
-[RequireComponent(typeof(MonsterJump))]
-[RequireComponent(typeof(MonsterSensor))]
 public class MonsterStateMachine : MonoBehaviour
 {
     // 컴포넌트 참조

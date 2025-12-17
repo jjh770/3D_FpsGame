@@ -11,6 +11,9 @@ public class PlayerStats : MonoBehaviour
     // 체력 (소모 가능한 스탯)
     [SerializeField] private ConsumableStat _health;
 
+    // 소모품 (리소스 스탯)
+    [SerializeField] private ResourceStat _bombCount;
+
     // 각종 스탯 (값 스탯)
     [SerializeField] private ValueStat _damage;
     [SerializeField] private ValueStat _moveSpeed;
@@ -20,6 +23,7 @@ public class PlayerStats : MonoBehaviour
 
     public ConsumableStat Stamina => _stamina;
     public ConsumableStat Health => _health;
+    public ResourceStat BombCount => _bombCount;
     public ValueStat Damage => _damage;
     public ValueStat MoveSpeed => _moveSpeed;
     public ValueStat SprintSpeed => _sprintSpeed;
@@ -30,6 +34,7 @@ public class PlayerStats : MonoBehaviour
     {
         _health.Initialize();
         _stamina.Initialize();
+        _bombCount.Initialize();
     }
 
     private void Update()

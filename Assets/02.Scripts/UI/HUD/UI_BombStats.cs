@@ -7,11 +7,17 @@ public class UI_BombStats : MonoBehaviour
 
     private void OnEnable()
     {
-        WeaponEvents.OnConsumableChanged += OnConsumableChanged;
+        if (WeaponEventChannelSO.Instance != null)
+        {
+            WeaponEventChannelSO.Instance.OnConsumableChanged += OnConsumableChanged;
+        }
     }
     private void OnDisable()
     {
-        WeaponEvents.OnConsumableChanged -= OnConsumableChanged;
+        if (WeaponEventChannelSO.Instance != null)
+        {
+            WeaponEventChannelSO.Instance.OnConsumableChanged -= OnConsumableChanged;
+        }
     }
 
     private void OnConsumableChanged(int current)

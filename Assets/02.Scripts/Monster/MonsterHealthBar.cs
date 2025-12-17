@@ -16,7 +16,6 @@ public class MonsterHealthBar : MonoBehaviour
     private Tween _fillTween;
     private Tween _delayTween;
 
-    private float _lastHealth = -1;
     private Camera _mainCamera;
 
     private void Awake()

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 // 키보드를 누르면 캐릭터를 그 방향으로 이동 시키고 싶다
-public class PlayerMove_1 : PlayerComponent
+public class PlayerMove : PlayerComponent
 {
     [SerializeField] private CharacterMoveConfigSO _moveConfig;
     private CharacterController _controller;

@@ -81,6 +81,6 @@ public class PlayerGunFire : PlayerComponent
             _weapons[i].gameObject.SetActive(i == index);
         }
 
-        WeaponEvents.TriggerChangeIcon(_currentWeapon.GetIcon());
+        WeaponEventChannelSO.Instance?.RaiseChangeWeapon(_currentWeapon.GetIcon());
     }
 }

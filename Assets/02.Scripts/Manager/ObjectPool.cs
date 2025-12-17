@@ -3,14 +3,19 @@ using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
 {
-    public static ObjectPool Instance;
+    private static ObjectPool _instance;
+    public static ObjectPool Instance => _instance;
 
     private Dictionary<string, List<GameObject>> _pools = new Dictionary<string, List<GameObject>>();
 
     private void Awake()
     {
-        if (Instance == null)
-            Instance = this;
+        if (_instance != null && _instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        _instance = this;
     }
 
     public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation)

@@ -21,16 +21,22 @@ public class UI_BulletStats : MonoBehaviour
     }
     private void OnEnable()
     {
-        WeaponEvents.OnAmmoChanged += OnAmmoChanged;
-        WeaponEvents.OnReload += OnReload;
-        WeaponEvents.OnChangeWeapon += OnChangeIcon;
+        if (WeaponEventChannelSO.Instance != null)
+        {
+            WeaponEventChannelSO.Instance.OnAmmoChanged += OnAmmoChanged;
+            WeaponEventChannelSO.Instance.OnReload += OnReload;
+            WeaponEventChannelSO.Instance.OnChangeWeapon += OnChangeIcon;
+        }
     }
 
     private void OnDisable()
     {
-        WeaponEvents.OnAmmoChanged -= OnAmmoChanged;
-        WeaponEvents.OnReload -= OnReload;
-        WeaponEvents.OnChangeWeapon -= OnChangeIcon;
+        if (WeaponEventChannelSO.Instance != null)
+        {
+            WeaponEventChannelSO.Instance.OnAmmoChanged -= OnAmmoChanged;
+            WeaponEventChannelSO.Instance.OnReload -= OnReload;
+            WeaponEventChannelSO.Instance.OnChangeWeapon -= OnChangeIcon;
+        }
     }
 
     private void OnAmmoChanged(int currentBullet, int reserveBullet)

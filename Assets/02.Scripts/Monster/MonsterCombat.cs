@@ -10,6 +10,7 @@ public class MonsterCombat : MonoBehaviour
     [SerializeField] private float _hitInvincibilityTime = 0.2f;
 
     private Player _player;
+    private MonsterJump _jump;
     private MonsterStats _stats;
     private MonsterMove _move;
     private float _attackTimer = 0f;
@@ -24,6 +25,7 @@ public class MonsterCombat : MonoBehaviour
     {
         _stats = GetComponent<MonsterStats>();
         _move = GetComponent<MonsterMove>();
+        _jump = GetComponent<MonsterJump>();
     }
 
     private void Start()
@@ -72,6 +74,11 @@ public class MonsterCombat : MonoBehaviour
         {
             return false;
         }
+        if (_jump.IsJumping)
+        {
+            _jump.CancelJump();
+        }
+
         if (_stats.Health.TryConsume(damage))
         {
             OnDamageReceived?.Invoke();
@@ -86,6 +93,10 @@ public class MonsterCombat : MonoBehaviour
 
     public void TakeKnockback(Vector3 direction, float amount)
     {
+        if (_jump.IsJumping)
+        {
+            _jump.CancelJump();
+        }
         _move.TakeKnockBack(direction, amount);
     }
 

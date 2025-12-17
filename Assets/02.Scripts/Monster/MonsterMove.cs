@@ -5,6 +5,8 @@ using UnityEngine.AI;
 public class MonsterMove : MonoBehaviour
 {
     private NavMeshAgent _agent;
+    private CharacterController _controller;
+    private GravityController _gravityController;
     private Vector3 _knockbackVelocity;
     private bool _wasOnOffMeshLink = false; // 이전 프레임의 OffMeshLink 상태
 
@@ -22,6 +24,9 @@ public class MonsterMove : MonoBehaviour
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _controller = GetComponent<CharacterController>();
+        _gravityController = GetComponent<GravityController>();
+
         _agent.stoppingDistance = 0.2f; // 기본값: 목적지 근처에서 멈춤
         _agent.updateRotation = true; // NavMeshAgent가 자동 회전 처리
         _agent.angularSpeed = _rotationSpeed * 60f; // degrees per second
@@ -33,13 +38,17 @@ public class MonsterMove : MonoBehaviour
         // 넉백 중일 때는 NavMeshAgent 비활성화하고 수동 이동
         if (IsKnockedBack)
         {
-            _agent.enabled = false;
+            if (_agent.enabled)
+            {
+                _agent.enabled = false; // NavMesh 제어 끔
+            }
             ApplyKnockback();
         }
         else if (!_agent.enabled)
         {
             // 넉백이 끝나면 NavMeshAgent 다시 활성화
             _agent.enabled = true;
+            _agent.Warp(transform.position);
         }
 
         // OffMeshLink 감지
@@ -107,16 +116,33 @@ public class MonsterMove : MonoBehaviour
 
     public void TakeKnockBack(Vector3 direction, float knockbackAmount)
     {
+        direction.y = 0f;
         _knockbackVelocity = direction.normalized * knockbackAmount;
     }
 
     private void ApplyKnockback()
     {
-        // NavMeshAgent가 비활성화된 상태에서 수동 이동
-        transform.position += _knockbackVelocity * Time.deltaTime;
+        // 중력 업데이트
+        _gravityController.UpdateGravity();
 
-        // 넉백 속도를 점진적으로 감속
-        _knockbackVelocity = Vector3.Lerp(_knockbackVelocity, Vector3.zero, _knockbackDecay * Time.deltaTime);
+        // 넉백 이동 (수평) + 중력 (수직)
+        Vector3 movement = _knockbackVelocity * Time.deltaTime;
+        movement.y = _gravityController.YVelocity * Time.deltaTime;
+
+        // CharacterController로 이동 (충돌 감지 + 바닥 체크 자동)
+        _controller.Move(movement);
+
+        // 수평 속도만 감속
+        Vector3 horizontal = new Vector3(_knockbackVelocity.x, 0f, _knockbackVelocity.z);
+        horizontal = Vector3.Lerp(horizontal, Vector3.zero, _knockbackDecay * Time.deltaTime);
+        _knockbackVelocity.x = horizontal.x;
+        _knockbackVelocity.z = horizontal.z;
+
+        //// NavMeshAgent가 비활성화된 상태에서 수동 이동
+        //transform.position += _knockbackVelocity * Time.deltaTime;
+
+        //// 넉백 속도를 점진적으로 감속
+        //_knockbackVelocity = Vector3.Lerp(_knockbackVelocity, Vector3.zero, _knockbackDecay * Time.deltaTime);
     }
 
     // NavMeshAgent 속성 접근자

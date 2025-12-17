@@ -97,7 +97,7 @@ public class MonsterStateMachine : MonoBehaviour
 
     private void HandleJumpComplete()
     {
-        if (Sensor.IsPlayerInRange(Stats.DetectDistance.Value))
+        if (Sensor.IsPlayerInRange(Stats.TraceDistance.Value))
         {
             ChangeState(new TraceState(this));
         }

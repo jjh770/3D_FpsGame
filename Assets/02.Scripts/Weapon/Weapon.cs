@@ -12,6 +12,9 @@ public class Weapon : MonoBehaviour, IWeapon
     [SerializeField] private Transform _fireTransform;
     [SerializeField] private ParticleSystem _hitEffectVFX;
 
+    [Header("Fire Effects")]
+    [SerializeField] private GameObject[] _muzzleFlashPrefabs; // 5개 할당
+
     // 런타임 상태 (각 인스턴스마다 독립적)
     private ResourceStat _bulletCount;
     private ResourceStat _bulletClipCount;
@@ -30,6 +33,7 @@ public class Weapon : MonoBehaviour, IWeapon
     private void Start()
     {
         BulletUIChange();
+        PrewarmMuzzleFlash(); // 추가
     }
 
     private void OnEnable()
@@ -58,6 +62,15 @@ public class Weapon : MonoBehaviour, IWeapon
         }
     }
 
+    private void PrewarmMuzzleFlash()
+    {
+        if (_muzzleFlashPrefabs.Length == 0) return;
+
+        foreach (var prefab in _muzzleFlashPrefabs)
+        {
+            ObjectPool.Instance.Prewarm(prefab, 3);
+        }
+    }
 
     // ScriptableObject의 데이터를 기반으로 ResourceStat 생성
     private void InitializeWeapon()
@@ -66,17 +79,19 @@ public class Weapon : MonoBehaviour, IWeapon
         _bulletClipCount = new ResourceStat(_weaponData.MaxBulletClipCount);
     }
 
-    public void TryShoot()
+    public bool TryShoot()
     {
-        if (_timer < _weaponData.CoolTime) return;
-        if (_isReloading) return;
-        if (_bulletCount.IsEmpty()) return;
+        if (_timer < _weaponData.CoolTime) return false;
+        if (_isReloading) return false;
+        if (_bulletCount.IsEmpty()) return false;
 
         _bulletCount.TryConsume();
         BulletUIChange();
         Fire();
+        FireEffect();
         TriggerRebound();
         _timer = 0f;
+        return true;
     }
 
     public void TryReload()
@@ -113,11 +128,29 @@ public class Weapon : MonoBehaviour, IWeapon
         _reloadCoroutine = null;
     }
 
+    private void FireEffect()
+    {
+        // 랜덤으로 하나 선택
+        int randomIndex = Random.Range(0, _muzzleFlashPrefabs.Length);
+        GameObject selectedFlash = _muzzleFlashPrefabs[randomIndex];
+
+        GameObject flash = ObjectPool.Instance.Spawn(
+            selectedFlash,
+            _fireTransform.position,
+            _fireTransform.rotation
+        );
+        // 부모 설정 추가
+        flash.transform.SetParent(_fireTransform);
+        flash.transform.localPosition = Vector3.zero; // 로컬 위치 0으로
+        flash.transform.localRotation = Quaternion.identity;
+
+        ObjectPool.Instance.Despawn(flash, 0.05f);
+    }
 
     private void Fire()
     {
-        // Ray를 생성하고 [발사할 위치], [방향]을 설정
-        Ray ray = new Ray(_fireTransform.position, _mainCamera.transform.forward);
+        // 화면 중앙에서 Ray 생성 (FPS/TPS 모두 지원)
+        Ray ray = _mainCamera.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0f));
 
         // RayCastHit(충돌한 대상의 정보)를 저장할 변수
         RaycastHit hitInfo;
@@ -127,9 +160,7 @@ public class Weapon : MonoBehaviour, IWeapon
         if (isHit)
         {
             // 충돌했다면 피격 이펙트 표시
-            // hitInfo.point: 부딪힌 위치
             _hitEffectVFX.transform.position = hitInfo.point;
-            // hitInfo.normal: 법선벡터 (튕겨져 나오는 방향)
             _hitEffectVFX.transform.forward = hitInfo.normal;
             _hitEffectVFX.Play();
 

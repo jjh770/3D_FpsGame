@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3347578}
   - component: {fileID: 2362062}
   - component: {fileID: 10854754}
-  - component: {fileID: 114752713060590030}
+  - component: {fileID: 3196506713580037841}
   m_Layer: 0
   m_Name: muzzelFlash 05
   m_TagString: Untagged
@@ -153,7 +153,7 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!114 &114752713060590030
+--- !u!114 &3196506713580037841
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -162,7 +162,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 199458}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63fcd57c108bbc844ac776aeae523ba7, type: 3}
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeToDestroy: 0.05
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0

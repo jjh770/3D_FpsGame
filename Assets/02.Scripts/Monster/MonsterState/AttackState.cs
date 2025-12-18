@@ -7,7 +7,6 @@ public class AttackState : MonsterStateBase
     public override void Enter()
     {
         _move.Stop();
-        _move.AnimTraceToAttack();
     }
 
     public override void Update()
@@ -32,7 +31,6 @@ public class AttackState : MonsterStateBase
         {
             // 공격 범위 이탈 → 추적
             _stateMachine.ChangeState(new TraceState(_stateMachine));
-            _move.AnimAttackToTrace();
         }
     }
 }

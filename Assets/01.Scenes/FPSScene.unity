@@ -2835,6 +2835,82 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 834070218}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &841077871
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 851221429}
+    m_Modifications:
+    - target: {fileID: 100060, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+      propertyPath: m_Name
+      value: Soldier_demo
+      objectReference: {fileID: 0}
+    - target: {fileID: 400060, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400060, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400060, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400060, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400060, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400060, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400060, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400060, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400060, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400060, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9500000, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 34291615c16abc84cbfa8e0d5a0a110c, type: 2}
+    - target: {fileID: 9500000, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+      propertyPath: m_WarningMessage
+      value: "\nBinding warning: Some generic clip(s) animate transforms that are
+        already bound by a Humanoid avatar. These transforms can only be changed
+        by Humanoid clips.\n\tTransform 'Bip001 L Hand'\n\tTransform 'Bip001 R Foot'\n\tTransform
+        'Bip001 R Finger0'\n\tTransform 'Bip001 Head'\n\tTransform 'Bip001 R UpperArm'\n\tTransform
+        'Bip001 R Calf'\n\tTransform 'Bip001 L UpperArm'\n\tTransform 'Bip001 L Forearm'\n\tTransform
+        'Bip001 R Thigh'\n\tTransform 'Bip001 L Foot'\n\tand more ...\n\tFrom animation
+        clip 'demo_combat_idle'"
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+--- !u!4 &841077872 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400060, guid: fcb334eb247ae3e488abb081c847cf09, type: 3}
+  m_PrefabInstance: {fileID: 841077871}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &851221425
 GameObject:
   m_ObjectHideFlags: 0
@@ -2868,7 +2944,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 851221425}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -2933,6 +3009,7 @@ Transform:
   - {fileID: 458060134}
   - {fileID: 1961454341}
   - {fileID: 736599651}
+  - {fileID: 841077872}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &851221430
@@ -6587,7 +6664,7 @@ Transform:
   m_GameObject: {fileID: 1958556806}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.65, z: 0.1}
+  m_LocalPosition: {x: 0, y: 0.65, z: 0.1308}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6608,7 +6685,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1961454341
 Transform:
   m_ObjectHideFlags: 0
@@ -7403,6 +7480,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Monster
       objectReference: {fileID: 0}
+    - target: {fileID: 2135200538711765005, guid: 4555f8767fb8d4d41a78c08905491bca, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2262580218546043996, guid: 4555f8767fb8d4d41a78c08905491bca, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -7413,7 +7494,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2262580218546043996, guid: 4555f8767fb8d4d41a78c08905491bca, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 10
+      value: 1.03
       objectReference: {fileID: 0}
     - target: {fileID: 2262580218546043996, guid: 4555f8767fb8d4d41a78c08905491bca, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7461,15 +7542,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8696684758567541942, guid: 4555f8767fb8d4d41a78c08905491bca, type: 3}
       propertyPath: _jumpDuration
-      value: 1
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 8696684758567541942, guid: 4555f8767fb8d4d41a78c08905491bca, type: 3}
       propertyPath: _jumpCurve.m_Curve.Array.data[2].time
-      value: 1.0451474
+      value: 1.053204
       objectReference: {fileID: 0}
     - target: {fileID: 8696684758567541942, guid: 4555f8767fb8d4d41a78c08905491bca, type: 3}
       propertyPath: _jumpCurve.m_Curve.Array.data[2].value
-      value: 0.5982815
+      value: 0.44834864
       objectReference: {fileID: 0}
     - target: {fileID: 9163616674342622901, guid: 4555f8767fb8d4d41a78c08905491bca, type: 3}
       propertyPath: m_Enabled

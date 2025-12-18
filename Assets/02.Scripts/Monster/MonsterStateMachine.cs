@@ -9,7 +9,7 @@ public class MonsterStateMachine : MonoBehaviour
     public MonsterPatrol Patrol { get; private set; }
     public MonsterJump Jump { get; private set; }
     public MonsterSensor Sensor { get; private set; }
-
+    private Animator _animator;
     private IMonsterState _currentState;
 
     private void Awake()
@@ -21,6 +21,7 @@ public class MonsterStateMachine : MonoBehaviour
         Patrol = GetComponent<MonsterPatrol>();
         Jump = GetComponent<MonsterJump>();
         Sensor = GetComponent<MonsterSensor>();
+        _animator = GetComponentInChildren<Animator>();
 
         // 이벤트 구독
         Combat.OnDamageReceived += HandleDamageReceived;
@@ -93,10 +94,12 @@ public class MonsterStateMachine : MonoBehaviour
     {
         if (Sensor.IsPlayerInRange(Stats.TraceDistance.Value))
         {
+            _animator.SetTrigger("JumpToTrace");
             ChangeState(new TraceState(this));
         }
         else
         {
+            _animator.SetTrigger("JumpToIdle");
             ChangeState(new IdleState(this));
         }
     }

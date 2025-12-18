@@ -7,7 +7,7 @@ public class MonsterCombat : MonoBehaviour
     [SerializeField] private PlayerReferenceSO _playerReference;
     [SerializeField] private ParticleSystem _attackEffectVFX;
     [SerializeField] private Transform _attackTransform;
-    [SerializeField] private float _hitInvincibilityTime = 0.2f;
+    [SerializeField] private float _hitInvincibilityTime = 0.4f;
 
     private Player _player;
     private MonsterStats _stats;
@@ -105,6 +105,7 @@ public class MonsterCombat : MonoBehaviour
     public IEnumerator Death_Coroutine()
     {
         OnDeath?.Invoke();
+        _animator.SetTrigger("Death");
         yield return null;
     }
 }

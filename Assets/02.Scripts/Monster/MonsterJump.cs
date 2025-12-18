@@ -59,9 +59,9 @@ public class MonsterJump : MonoBehaviour
 
         _jumpCoroutine = StartCoroutine(JumpCoroutine(linkData));
     }
-    public void AnimTraceToJump()
+    public void AnimAnyToJump()
     {
-        _animator.SetTrigger("TraceToJump");
+        _animator.SetTrigger("AnyToJump");
     }
 
     private IEnumerator JumpCoroutine(OffMeshLinkData linkData)
@@ -123,6 +123,7 @@ public class MonsterJump : MonoBehaviour
 
         _isJumping = false;
         _jumpCoroutine = null;
+
 
         // 점프 완료 이벤트 발생
         OnJumpComplete?.Invoke();

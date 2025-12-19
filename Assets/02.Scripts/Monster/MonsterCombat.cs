@@ -5,7 +5,6 @@ using UnityEngine;
 public class MonsterCombat : MonoBehaviour
 {
     [SerializeField] private PlayerReferenceSO _playerReference;
-    [SerializeField] private ParticleSystem _attackEffectVFX;
     [SerializeField] private Transform _attackTransform;
     [SerializeField] private float _hitInvincibilityTime = 0.4f;
 
@@ -16,6 +15,9 @@ public class MonsterCombat : MonoBehaviour
 
     private float _attackTimer = 0f;
     private bool _isInvincible = false; // 무적 상태
+
+    // VFX 풀링용
+    private GameObject _attackVFXPrefab;
 
     public event Action OnDeath;
     public event Action OnHit;
@@ -52,15 +54,50 @@ public class MonsterCombat : MonoBehaviour
         //StartCoroutine(Attack_Coroutine());
     }
 
+    /// <summary>
+    /// MonsterDataSO로 VFX 초기화
+    /// </summary>
+    public void Initialize(MonsterDataSO data)
+    {
+        if (data != null)
+        {
+            _attackVFXPrefab = data.AttackVFXPrefab;
+        }
+    }
+
     public void AttackVFX()
     {
+        if (_attackVFXPrefab == null)
+        {
+            Debug.LogWarning($"[MonsterCombat] Attack VFX prefab is not set for {gameObject.name}");
+            _player?.TryTakeDamage(_stats.AttackDamage.Value);
+            return;
+        }
+
         Vector3 direction = (_player.transform.position - transform.position).normalized;
+        Vector3 spawnPosition = _attackTransform != null ? _attackTransform.position : transform.position;
+        Quaternion spawnRotation = Quaternion.LookRotation(direction);
 
-        _attackEffectVFX.transform.position = _attackTransform.position;
-        _attackEffectVFX.transform.rotation = Quaternion.LookRotation(direction);
-        _attackEffectVFX.Play();
+        // ObjectPool에서 VFX 가져오기
+        GameObject vfx = ObjectPool.Instance.Spawn(_attackVFXPrefab, spawnPosition, spawnRotation);
 
-        _player.TryTakeDamage(_stats.AttackDamage.Value);
+        // ParticleSystem 재생
+        ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
+        if (ps != null)
+        {
+            ps.Play();
+
+            // VFX 재생 후 풀로 반환 (duration만큼 후)
+            float duration = ps.main.duration + ps.main.startLifetime.constantMax;
+            ObjectPool.Instance.Despawn(vfx, duration);
+        }
+        else
+        {
+            // ParticleSystem이 없으면 1초 후 반환
+            ObjectPool.Instance.Despawn(vfx, 1f);
+        }
+
+        _player?.TryTakeDamage(_stats.AttackDamage.Value);
     }
 
     public void UpdateAttackTimer(float deltaTime)

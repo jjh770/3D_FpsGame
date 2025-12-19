@@ -5,6 +5,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(MonsterStateMachine))]
 [RequireComponent(typeof(MonsterStats))]
 [RequireComponent(typeof(MonsterCombat))]
+[RequireComponent(typeof(MonsterVFXController))]
 [RequireComponent(typeof(MonsterPatrol))]
 [RequireComponent(typeof(MonsterJump))]
 [RequireComponent(typeof(MonsterSensor))]
@@ -34,7 +35,7 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable, IPoolable
 
     public bool TryTakeDamage(Damage damage)
     {
-        return _combat.TryTakeDamage(damage.Value);
+        return _combat.TryTakeDamage(damage);
     }
 
     public void TakeKnockback(Vector3 direction, float knockbackAmount)

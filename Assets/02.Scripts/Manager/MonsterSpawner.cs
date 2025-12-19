@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
 using UnityEngine;
 
@@ -64,13 +64,15 @@ public class MonsterSpawner : MonoBehaviour
 
             // 몬스터 프리팹 Prewarm
             ObjectPool.Instance.Prewarm(monsterData.Prefab, monsterData.PoolSize);
-            Debug.Log($"[MonsterSpawner] Prewarmed {monsterData.PoolSize} {monsterData.name} monsters");
 
             // VFX 프리팹 Prewarm
             if (monsterData.AttackVFXPrefab != null)
             {
-                ObjectPool.Instance.Prewarm(monsterData.AttackVFXPrefab, monsterData.VFXPoolSize);
-                Debug.Log($"[MonsterSpawner] Prewarmed {monsterData.VFXPoolSize} {monsterData.name} VFX");
+                ObjectPool.Instance.Prewarm(monsterData.AttackVFXPrefab, monsterData.AttackPoolSize);
+            }
+            if (monsterData.HitVFXPrefab != null)
+            {
+                ObjectPool.Instance.Prewarm(monsterData.HitVFXPrefab, monsterData.HitPoolSize);
             }
         }
     }
@@ -100,11 +102,18 @@ public class MonsterSpawner : MonoBehaviour
             stats.Initialize(monsterData);
         }
 
-        // MonsterCombat VFX 초기화
+        // MonsterVFXController 초기화
+        MonsterVFXController vfxController = monsterObj.GetComponent<MonsterVFXController>();
         MonsterCombat combat = monsterObj.GetComponent<MonsterCombat>();
+        if (vfxController != null && combat != null)
+        {
+            vfxController.Initialize(monsterData, combat.AttackTransform);
+        }
+
+        // MonsterCombat 상태 리셋
         if (combat != null)
         {
-            combat.Initialize(monsterData);
+            combat.ResetState();
         }
 
         return monsterObj;
@@ -348,7 +357,7 @@ public class MonsterSpawner : MonoBehaviour
             Gizmos.DrawRay(_spawnPoints[i].position, forward * 1.5f);
 
             // 번호 표시를 위한 라벨 (Scene View에서만 보임)
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             UnityEditor.Handles.Label(
                 _spawnPoints[i].position + Vector3.up * 0.7f,
                 $"Spawn {i}",
@@ -359,7 +368,7 @@ public class MonsterSpawner : MonoBehaviour
                     fontStyle = FontStyle.Bold
                 }
             );
-            #endif
+#endif
         }
     }
 #endif

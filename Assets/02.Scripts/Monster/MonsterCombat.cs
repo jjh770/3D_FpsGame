@@ -11,23 +11,24 @@ public class MonsterCombat : MonoBehaviour
     private Player _player;
     private MonsterStats _stats;
     private MonsterMove _move;
+    private MonsterVFXController _vfxController;
     private Animator _animator;
 
     private float _attackTimer = 0f;
     private bool _isInvincible = false; // 무적 상태
-
-    // VFX 풀링용
-    private GameObject _attackVFXPrefab;
 
     public event Action OnDeath;
     public event Action OnHit;
     public event Action OnDamageReceived;
     public event Action OnHealthDepleted;
 
+    public Transform AttackTransform => _attackTransform; // VFXController에서 사용
+
     private void Awake()
     {
         _stats = GetComponent<MonsterStats>();
         _move = GetComponent<MonsterMove>();
+        _vfxController = GetComponent<MonsterVFXController>();
         _animator = GetComponentInChildren<Animator>();
     }
 
@@ -55,20 +56,6 @@ public class MonsterCombat : MonoBehaviour
     }
 
     /// <summary>
-    /// MonsterDataSO로 VFX 초기화
-    /// </summary>
-    public void Initialize(MonsterDataSO data)
-    {
-        if (data != null)
-        {
-            _attackVFXPrefab = data.AttackVFXPrefab;
-        }
-
-        // 전투 상태 리셋
-        ResetState();
-    }
-
-    /// <summary>
     /// 풀에서 재스폰 시 전투 상태 초기화
     /// </summary>
     public void ResetState()
@@ -79,6 +66,7 @@ public class MonsterCombat : MonoBehaviour
 
     public void AttackVFX()
     {
+        // Damage 구조체 생성
         Damage damage = new Damage()
         {
             Value = _stats.AttackDamage.Value,
@@ -87,36 +75,14 @@ public class MonsterCombat : MonoBehaviour
             Critical = false
         };
 
-        if (_attackVFXPrefab == null)
+        // VFX 재생은 VFXController에게 위임
+        if (_vfxController != null && _player != null)
         {
-            Debug.LogWarning($"[MonsterCombat] Attack VFX prefab is not set for {gameObject.name}");
-            _player?.TryTakeDamage(damage);
-            return;
+            Vector3 direction = (_player.transform.position - transform.position).normalized;
+            _vfxController.MonsterAttackVFX(direction);
         }
 
-        Vector3 direction = (_player.transform.position - transform.position).normalized;
-        Vector3 spawnPosition = _attackTransform != null ? _attackTransform.position : transform.position;
-        Quaternion spawnRotation = Quaternion.LookRotation(direction);
-
-        // ObjectPool에서 VFX 가져오기
-        GameObject vfx = ObjectPool.Instance.Spawn(_attackVFXPrefab, spawnPosition, spawnRotation);
-
-        // ParticleSystem 재생
-        ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
-        if (ps != null)
-        {
-            ps.Play();
-
-            // VFX 재생 후 풀로 반환 (duration만큼 후)
-            float duration = ps.main.duration + ps.main.startLifetime.constantMax;
-            ObjectPool.Instance.Despawn(vfx, duration);
-        }
-        else
-        {
-            // ParticleSystem이 없으면 1초 후 반환
-            ObjectPool.Instance.Despawn(vfx, 1f);
-        }
-
+        // 데미지 처리 (Combat의 책임)
         _player?.TryTakeDamage(damage);
     }
 
@@ -125,14 +91,15 @@ public class MonsterCombat : MonoBehaviour
         _attackTimer += deltaTime;
     }
 
-    public bool TryTakeDamage(float damage)
+    public bool TryTakeDamage(Damage damage)
     {
         // 무적 상태 체크
         if (_isInvincible)
         {
             return false;
         }
-        if (_stats.Health.TryConsume(damage))
+        _vfxController.MonsterHitVFX(damage.HitPoint);
+        if (_stats.Health.TryConsume(damage.Value))
         {
             OnDamageReceived?.Invoke();
         }
@@ -154,7 +121,6 @@ public class MonsterCombat : MonoBehaviour
     {
         _isInvincible = true;
         OnHit?.Invoke();
-
         yield return new WaitForSeconds(_hitInvincibilityTime);
 
         _isInvincible = false;

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// 몬스터의 불변 설정 데이터 (템플릿)
@@ -29,7 +29,12 @@ public class MonsterDataSO : ScriptableObject
     [Tooltip("공격 시 재생할 VFX 프리팹")]
     [SerializeField] private GameObject _attackVFXPrefab;
     [Tooltip("VFX 풀에 미리 생성할 개수")]
-    [SerializeField] private int _vfxPoolSize = 3;
+    [SerializeField] private int _attackPoolSize = 3;
+    [Tooltip("피격 시 재생할 VFX 프리팹")]
+    [SerializeField] private GameObject _hitVFXPrefab;
+    [Tooltip("VFX 풀에 미리 생성할 개수")]
+    [SerializeField] private int _hitPoolSize = 10;
+
 
     // Properties
     public GameObject Prefab => _prefab;
@@ -42,5 +47,7 @@ public class MonsterDataSO : ScriptableObject
     public float AttackCoolTime => _attackCoolTime;
     public float AttackDamage => _attackDamage;
     public GameObject AttackVFXPrefab => _attackVFXPrefab;
-    public int VFXPoolSize => _vfxPoolSize;
+    public int AttackPoolSize => _attackPoolSize;
+    public GameObject HitVFXPrefab => _hitVFXPrefab;
+    public int HitPoolSize => _hitPoolSize;
 }

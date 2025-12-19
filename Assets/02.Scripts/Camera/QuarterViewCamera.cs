@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// League of Legends 스타일의 회전 가능한 쿼터뷰 카메라
@@ -13,7 +13,6 @@ public class QuarterViewCamera : MonoBehaviour
 
     [Header("Camera Distance & Height")]
     [SerializeField] private float _distance = 12f; // 플레이어와의 거리
-    [SerializeField] private float _height = 10f; // 플레이어 위의 높이
     [SerializeField] private float _viewAngle = 45f; // 내려다보는 각도 (도)
 
     [Header("Rotation Settings")]

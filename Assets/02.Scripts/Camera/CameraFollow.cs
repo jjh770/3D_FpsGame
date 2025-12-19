@@ -10,7 +10,6 @@ public class CameraFollow : MonoBehaviour
 {
     [SerializeField] private Transform _cameraTarget;
     [SerializeField] private Transform _fpsTransform;
-    [SerializeField] private Transform _tpsTransform;
     [SerializeField] private Player _player;
 
     [Header("Camera Mode Settings")]

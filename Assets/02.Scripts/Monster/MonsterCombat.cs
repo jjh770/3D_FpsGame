@@ -81,6 +81,7 @@ public class MonsterCombat : MonoBehaviour
         }
         else
         {
+            OnDamageReceived?.Invoke();
             OnHealthDepleted?.Invoke();
             return false;
         }

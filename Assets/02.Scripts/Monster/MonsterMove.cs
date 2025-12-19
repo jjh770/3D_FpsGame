@@ -157,6 +157,8 @@ public class MonsterMove : MonoBehaviour
 
     public void TakeKnockBack(Vector3 direction, float knockbackAmount)
     {
+        if (_isDead) return;
+
         direction.y = 0f;
         _knockbackVelocity = direction.normalized * knockbackAmount;
     }
@@ -189,14 +191,13 @@ public class MonsterMove : MonoBehaviour
     private void HandleDeathStart()
     {
         _isDead = true;
+        _agent.enabled = false;
+        _knockbackVelocity = Vector3.zero;
         StartCoroutine(DeathMonster());
     }
 
     private void DeadAnimation()
     {
-        _agent.enabled = false;
-        _knockbackVelocity = Vector3.zero;
-
         // 중력 업데이트
         _gravityController.UpdateGravity();
 

@@ -15,6 +15,6 @@ MonoBehaviour:
   _pathName: Elite Patrol Path
   _description: "\uD328\uD2B8\uB864 \uACBD\uB85C \uC124\uBA85"
   _waypoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
+  - {x: 20, y: 0, z: 20}
+  - {x: -20, y: 0, z: 20}
+  - {x: 0, y: 0, z: 30}

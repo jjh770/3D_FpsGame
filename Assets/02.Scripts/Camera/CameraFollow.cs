@@ -10,6 +10,7 @@ public class CameraFollow : MonoBehaviour
 {
     [SerializeField] private Transform _cameraTarget;
     [SerializeField] private Transform _fpsTransform;
+    [SerializeField] private Transform _tpsTarget; // TPS 카메라가 따라갈 타겟 (플레이어 어깨/눈 위치)
     [SerializeField] private Player _player;
 
     [Header("Camera Mode Settings")]
@@ -23,8 +24,10 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private float _rotationSpeed = 100f;
     [SerializeField] private float _followSmoothness = 10f;
     [SerializeField] private float _rotationSmoothness = 8f;
-    [SerializeField] private float _minPitch = -45f; // 최소 수직 각도 (아래)
+    [SerializeField] private float _minPitch = -10f; // 최소 수직 각도 (아래) - 캐릭터 아래로 가지 않도록 제한
     [SerializeField] private float _maxPitch = 45f; // 최대 수직 각도 (위)
+    [Tooltip("true: 즉시 반응, false: 부드럽게 따라감")]
+    [SerializeField] private bool _instantResponse = true;
 
     private bool _isChanging;
     private bool _canRotateCamera = true;
@@ -138,9 +141,19 @@ public class CameraFollow : MonoBehaviour
         // 수직 각도 제한
         _targetPitch = Mathf.Clamp(_targetPitch, _minPitch, _maxPitch);
 
-        // 부드러운 회전
-        _currentYaw = Mathf.LerpAngle(_currentYaw, _targetYaw, _rotationSmoothness * Time.deltaTime);
-        _currentPitch = Mathf.Lerp(_currentPitch, _targetPitch, _rotationSmoothness * Time.deltaTime);
+        // 즉시 반응 또는 부드러운 회전
+        if (_instantResponse)
+        {
+            // 즉시 적용
+            _currentYaw = _targetYaw;
+            _currentPitch = _targetPitch;
+        }
+        else
+        {
+            // 부드러운 회전
+            _currentYaw = Mathf.LerpAngle(_currentYaw, _targetYaw, _rotationSmoothness * Time.deltaTime);
+            _currentPitch = Mathf.Lerp(_currentPitch, _targetPitch, _rotationSmoothness * Time.deltaTime);
+        }
     }
 
     private void UpdateTPSCamera()
@@ -150,8 +163,10 @@ public class CameraFollow : MonoBehaviour
         // 플레이어를 카메라 수평 방향으로 회전 (카메라가 보는 방향 = 플레이어가 보는 방향)
         _player.transform.rotation = Quaternion.Euler(0, _currentYaw, 0);
 
-        // 플레이어 어깨/눈 높이 기준점
-        Vector3 playerPivot = _player.transform.position + Vector3.up * _tpsHeightOffset;
+        // TPS 타겟이 설정되어 있으면 그 위치 사용, 없으면 계산
+        Vector3 playerPivot = _tpsTarget != null
+            ? _tpsTarget.position
+            : _player.transform.position + Vector3.up * _tpsHeightOffset;
 
         // 수평/수직 각도를 라디안으로 변환
         float yawRad = _currentYaw * Mathf.Deg2Rad;
@@ -174,13 +189,29 @@ public class CameraFollow : MonoBehaviour
         // 최종 카메라 위치
         Vector3 targetPosition = playerPivot - cameraOffset + shoulderOffset;
 
-        // 부드럽게 이동
-        transform.position = Vector3.SmoothDamp(
-            transform.position,
-            targetPosition,
-            ref _velocity,
-            1f / _followSmoothness
-        );
+        // 캐릭터 발 아래로 카메라가 가지 않도록 최소 높이 제한
+        float minCameraHeight = _player.transform.position.y + 0.2f; // 발 위 최소 20cm
+        if (targetPosition.y < minCameraHeight)
+        {
+            targetPosition.y = minCameraHeight;
+        }
+
+        // 즉시 반응 또는 부드럽게 이동
+        if (_instantResponse)
+        {
+            // 즉시 적용
+            transform.position = targetPosition;
+        }
+        else
+        {
+            // 부드럽게 이동
+            transform.position = Vector3.SmoothDamp(
+                transform.position,
+                targetPosition,
+                ref _velocity,
+                1f / _followSmoothness
+            );
+        }
 
         // 어깨 오프셋이 적용된 기준점을 바라봄
         Vector3 lookAtPoint = playerPivot + shoulderOffset;

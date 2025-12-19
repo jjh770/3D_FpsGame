@@ -771,6 +771,37 @@ MonoBehaviour:
   m_ChildScaleWidth: 1
   m_ChildScaleHeight: 1
   m_ReverseArrangement: 0
+--- !u!1 &130784052
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 130784053}
+  m_Layer: 6
+  m_Name: TPSView
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &130784053
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130784052}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.7, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 303270188}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &134740010
 GameObject:
   m_ObjectHideFlags: 0
@@ -1075,6 +1106,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1958556807}
+  - {fileID: 130784053}
   m_Father: {fileID: 851221429}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &330585543
@@ -1248,6 +1280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cameraTarget: {fileID: 851221429}
   _fpsTransform: {fileID: 1958556807}
+  _tpsTarget: {fileID: 130784053}
   _player: {fileID: 851221438}
   _cameraRotate: {fileID: 330585548}
   _currentMode: 0
@@ -1255,10 +1288,11 @@ MonoBehaviour:
   _tpsHeightOffset: 0.7
   _tpsShoulderOffset: {x: 0.45, y: 0, z: 0}
   _rotationSpeed: 300
-  _followSmoothness: 10
+  _followSmoothness: 100
   _rotationSmoothness: 8
   _minPitch: -45
   _maxPitch: 45
+  _instantResponse: 0
 --- !u!1 &351372647
 GameObject:
   m_ObjectHideFlags: 0
@@ -6987,6 +7021,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _monsterTypes:
   - {fileID: 11400000, guid: af01abdfa56285f40bd028a42f8f97f6, type: 2}
+  - {fileID: 11400000, guid: d028652665588194c92cbc2a7441076e, type: 2}
   _spawnPoints:
   - {fileID: 2116084278}
   - {fileID: 264723532}

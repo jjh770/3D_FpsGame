@@ -156,6 +156,9 @@ public class MonsterSpawner : MonoBehaviour
         if (monster != null)
         {
             RegisterMonster(monsterData.Prefab.name, monster);
+
+            // 모든 초기화 완료 후 스폰 완료 알림 (HealthBar 등 업데이트)
+            monster.NotifySpawnComplete();
         }
 
         return monsterObj;

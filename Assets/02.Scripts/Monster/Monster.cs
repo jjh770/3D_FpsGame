@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(MonsterMove))]
@@ -19,6 +20,7 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable, IPoolable
     private MonsterStateMachine _stateMachine;
     private Animator _animator;
 
+    public event Action OnMonsterSpawned; // 스폰 완료 후 발생
     private void Awake()
     {
         _combat = GetComponent<MonsterCombat>();
@@ -70,6 +72,14 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable, IPoolable
 
         // StateMachine 초기화 (Start()는 첫 생성 시에만 호출되므로 여기서 리셋 필요)
         _stateMachine?.ChangeState(new ReadyState(_stateMachine));
+    }
+
+    /// <summary>
+    /// 스폰 완료 후 호출 (MonsterSpawner에서 모든 초기화 완료 후 호출)
+    /// </summary>
+    public void NotifySpawnComplete()
+    {
+        OnMonsterSpawned?.Invoke();
     }
 
     public void OnDespawn()

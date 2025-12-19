@@ -14,11 +14,12 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable
 {
     private MonsterCombat _combat;
     private MonsterMove _move;
-
+    private Animator _animator;
     private void Awake()
     {
         _combat = GetComponent<MonsterCombat>();
         _move = GetComponent<MonsterMove>();
+        _animator = GetComponentInChildren<Animator>();
     }
 
     private void Start()
@@ -33,6 +34,7 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable
 
     public void TakeKnockback(Vector3 direction, float knockbackAmount)
     {
+        _animator.SetTrigger("Hit");
         _combat.TakeKnockback(direction, knockbackAmount);
     }
 

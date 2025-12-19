@@ -1,5 +1,4 @@
-﻿using DG.Tweening;
-using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -27,12 +26,9 @@ public class MonsterMove : MonoBehaviour
     // 움직임 판정 기준
     [SerializeField] private float _moveSpeedThreshold = 0.1f;
 
-    private Tween _fallRotateTween;
-    private Tween _fallMoveTween;
-
     public bool IsKnockedBack => _knockbackVelocity.magnitude > _minKnockbackVelocity;
     private bool _isDead = false;
-    private float _fallTime = 2f;
+    private float _deathTime = 3f;
 
     private void Awake()
     {
@@ -53,7 +49,11 @@ public class MonsterMove : MonoBehaviour
     }
     private void Update()
     {
-        if (_isDead) return;
+        if (_isDead)
+        {
+            DeadAnimation();
+            return;
+        }
 
         // 넉백 중일 때는 NavMeshAgent 비활성화하고 수동 이동
         if (IsKnockedBack)
@@ -138,15 +138,6 @@ public class MonsterMove : MonoBehaviour
         _agent.speed = monsterSpeed;
     }
 
-    public void AnimTraceToAttack()
-    {
-        _animator.SetTrigger("TraceToAttackIdle");
-    }
-    public void AnimAttackToTrace()
-    {
-        _animator.SetTrigger("AttackIdleToTrace");
-    }
-
     // 특정 위치를 바라보기 (Attack 상태에서 사용)
     public void LookAt(Vector3 targetPosition)
     {
@@ -166,6 +157,8 @@ public class MonsterMove : MonoBehaviour
 
     public void TakeKnockBack(Vector3 direction, float knockbackAmount)
     {
+        if (_isDead) return;
+
         direction.y = 0f;
         _knockbackVelocity = direction.normalized * knockbackAmount;
     }
@@ -200,39 +193,25 @@ public class MonsterMove : MonoBehaviour
         _isDead = true;
         _agent.enabled = false;
         _knockbackVelocity = Vector3.zero;
-        StartCoroutine(FallMonster());
+        StartCoroutine(DeathMonster());
     }
 
-    private IEnumerator FallMonster()
+    private void DeadAnimation()
     {
-        // 오른쪽 or 왼쪽으로 쓰러지기 (90도 회전)
-        float fallDirection = UnityEngine.Random.value > 0.5f ? 90f : -90f;
+        // 중력 업데이트
+        _gravityController.UpdateGravity();
 
-        _fallRotateTween?.Kill();
-        _fallRotateTween = transform.DORotate(new Vector3(0, 0, fallDirection), 1f)
-            .SetEase(Ease.InQuad);
+        // 넉백 이동 (수평) + 중력 (수직)
+        Vector3 movement = _knockbackVelocity * Time.deltaTime;
+        movement.y = _gravityController.YVelocity * Time.deltaTime;
 
-        // 약간 아래로도 이동 (선택사항)
-        _fallMoveTween?.Kill();
-        _fallMoveTween = transform.DOMoveY(transform.position.y - 0.5f, 1f)
-            .SetEase(Ease.InQuad);
+        // CharacterController로 이동 (충돌 감지 + 바닥 체크 자동)
+        _controller.Move(movement);
+    }
 
-        float fallTime = 0f;
-        while (fallTime < _fallTime)
-        {
-            // 중력 업데이트
-            _gravityController.UpdateGravity();
-
-            // 넉백 이동 (수평) + 중력 (수직)
-            Vector3 movement = _knockbackVelocity * Time.deltaTime;
-            movement.y = _gravityController.YVelocity * Time.deltaTime;
-
-            // CharacterController로 이동 (충돌 감지 + 바닥 체크 자동)
-            _controller.Move(movement);
-            fallTime += Time.deltaTime;
-
-            yield return null; // 다음 프레임까지 대기
-        }
+    private IEnumerator DeathMonster()
+    {
+        yield return new WaitForSeconds(_deathTime);
         OnDeathFinish?.Invoke();
     }
 

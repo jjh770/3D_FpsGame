@@ -7,7 +7,7 @@ public class PlayerGunFire : PlayerComponent
     // 마우스의 왼쪽 버튼을 누르면 바라보는 방향으로 총을 발사하고 싶다. (총을 발사하고 싶다)
     [Header("Weapons")]
     [SerializeField] private List<Weapon> _weapons = new List<Weapon>();
-
+    private Animator _animator;
     private Weapon _currentWeapon;
 
     protected override void Awake()
@@ -18,6 +18,7 @@ public class PlayerGunFire : PlayerComponent
         {
             weapon.gameObject.SetActive(false);
         }
+        _animator = GetComponentInChildren<Animator>();
     }
 
     private void Start()
@@ -44,14 +45,20 @@ public class PlayerGunFire : PlayerComponent
             case FireMode.SemiAuto:
                 if (Input.GetMouseButtonDown(0))
                 {
-                    _currentWeapon.TryShoot();
+                    if (_currentWeapon.TryShoot())
+                    {
+                        _animator.SetTrigger("GunFire");
+                    }
                 }
                 break;
 
             case FireMode.FullAuto:
                 if (Input.GetMouseButton(0))
                 {
-                    _currentWeapon.TryShoot();
+                    if (_currentWeapon.TryShoot())
+                    {
+                        _animator.SetTrigger("GunFire");
+                    }
                 }
                 break;
         }

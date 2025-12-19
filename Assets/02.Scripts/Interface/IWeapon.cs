@@ -3,7 +3,7 @@ using UnityEngine;
 
 public interface IWeapon
 {
-    void TryShoot();
+    bool TryShoot();
     void TryReload();
     Sprite GetIcon();
 }

@@ -242,6 +242,7 @@ MonoBehaviour:
   _minKnockbackVelocity: 0.1
   _knockbackDecay: 5
   _rotationSpeed: 10
+  _moveSpeedThreshold: 0.1
 --- !u!114 &4251772491593148615
 MonoBehaviour:
   m_ObjectHideFlags: 0

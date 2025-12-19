@@ -27,7 +27,7 @@ public class MonsterVFXController : MonoBehaviour
     /// <summary>
     /// 공격 VFX를 재생합니다.
     /// </summary>
-    public void MonsterAttackVFX(Vector3 direction)
+    public void PlayAttackVFX(Vector3 direction)
     {
         if (_attackVFXPrefab == null)
         {
@@ -58,13 +58,16 @@ public class MonsterVFXController : MonoBehaviour
         }
     }
 
-    public void MonsterHitVFX(Vector3 hitPoint)
+    /// <summary>
+    /// 피격 VFX를 재생합니다.
+    /// </summary>
+    public void PlayHitVFX(Vector3 hitPoint)
     {
         if (_hitVFXPrefab == null) return;
 
         // ObjectPool에서 VFX 가져오기
         GameObject vfx = ObjectPool.Instance.Spawn(_hitVFXPrefab, hitPoint, Quaternion.identity);
-        vfx.transform.SetParent(transform);
+        // SetParent 제거: VFX는 hitPoint에 고정되어야 함 (몬스터가 움직여도 따라다니면 안 됨)
 
         // ParticleSystem 재생
         ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
@@ -78,8 +81,8 @@ public class MonsterVFXController : MonoBehaviour
         }
         else
         {
-            // ParticleSystem이 없으면 1초 후 반환
-            ObjectPool.Instance.Despawn(vfx, 3f);
+            // ParticleSystem이 없으면 기본 시간 후 반환
+            ObjectPool.Instance.Despawn(vfx, 1f);
         }
     }
     // public void PlayDeathVFX() { }

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -8,6 +9,9 @@ using UnityEngine;
 /// </summary>
 public class MonsterSpawner : MonoBehaviour
 {
+    private static MonsterSpawner _instance;
+    public static MonsterSpawner Instance => _instance;
+
     [Header("Monster Types")]
     [SerializeField] private MonsterDataSO[] _monsterTypes;
 
@@ -30,6 +34,20 @@ public class MonsterSpawner : MonoBehaviour
 
     private int _currentSpawnIndex = 0;
 
+    // 살아있는 몬스터 추적 (성능 최적화)
+    private Dictionary<string, List<Monster>> _activeMonsters = new Dictionary<string, List<Monster>>();
+
+    private void Awake()
+    {
+        // Singleton 설정
+        if (_instance != null && _instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        _instance = this;
+    }
+
     private void Start()
     {
         if (_prewarmOnStart)
@@ -40,6 +58,14 @@ public class MonsterSpawner : MonoBehaviour
         if (_autoSpawn)
         {
             StartCoroutine(AutoSpawnCoroutine());
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_instance == this)
+        {
+            _instance = null;
         }
     }
 
@@ -116,6 +142,13 @@ public class MonsterSpawner : MonoBehaviour
             combat.ResetState();
         }
 
+        // 살아있는 몬스터 리스트에 등록
+        Monster monster = monsterObj.GetComponent<Monster>();
+        if (monster != null)
+        {
+            RegisterMonster(monsterData.Prefab.name, monster);
+        }
+
         return monsterObj;
     }
 
@@ -167,21 +200,51 @@ public class MonsterSpawner : MonoBehaviour
     // ========== Auto Spawn 기능 ==========
 
     /// <summary>
-    /// 특정 MonsterDataSO의 살아있는 몬스터 개수를 반환합니다.
+    /// 몬스터를 살아있는 리스트에 등록합니다.
+    /// </summary>
+    private void RegisterMonster(string prefabName, Monster monster)
+    {
+        if (!_activeMonsters.ContainsKey(prefabName))
+        {
+            _activeMonsters[prefabName] = new List<Monster>();
+        }
+
+        if (!_activeMonsters[prefabName].Contains(monster))
+        {
+            _activeMonsters[prefabName].Add(monster);
+        }
+    }
+
+    /// <summary>
+    /// 몬스터를 살아있는 리스트에서 제거합니다.
+    /// </summary>
+    public void UnregisterMonster(Monster monster)
+    {
+        if (monster == null) return;
+
+        string prefabName = monster.name; // 풀에서 나온 오브젝트는 이미 이름이 설정됨
+
+        if (_activeMonsters.ContainsKey(prefabName))
+        {
+            _activeMonsters[prefabName].Remove(monster);
+        }
+    }
+
+    /// <summary>
+    /// 특정 MonsterDataSO의 살아있는 몬스터 개수를 반환합니다. (최적화됨)
     /// </summary>
     private int GetAliveMonsterCount(MonsterDataSO monsterData)
     {
         if (monsterData == null || monsterData.Prefab == null)
             return 0;
 
-        // 씬에 있는 모든 Monster 찾기
-        Monster[] allMonsters = FindObjectsOfType<Monster>();
+        string prefabName = monsterData.Prefab.name;
 
-        // 활성화되어 있고, 같은 프리팹 이름을 가진 몬스터만 카운트
-        return allMonsters.Count(m =>
-            m.gameObject.activeSelf &&
-            m.gameObject.name == monsterData.Prefab.name
-        );
+        if (!_activeMonsters.ContainsKey(prefabName))
+            return 0;
+
+        // 리스트에서 활성화된 몬스터만 카운트 (null 체크 포함)
+        return _activeMonsters[prefabName].Count(m => m != null && m.gameObject.activeSelf);
     }
 
     /// <summary>

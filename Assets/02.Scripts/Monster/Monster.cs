@@ -46,6 +46,10 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable, IPoolable
 
     private void HandleDeathFinish()
     {
+        // MonsterSpawner에서 등록 해제 (성능 최적화)
+        MonsterSpawner.Instance?.UnregisterMonster(this);
+
+        // ObjectPool로 반환
         ObjectPool.Instance.Despawn(gameObject);
     }
 

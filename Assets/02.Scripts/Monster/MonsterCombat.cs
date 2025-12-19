@@ -79,7 +79,7 @@ public class MonsterCombat : MonoBehaviour
         if (_vfxController != null && _player != null)
         {
             Vector3 direction = (_player.transform.position - transform.position).normalized;
-            _vfxController.MonsterAttackVFX(direction);
+            _vfxController.PlayAttackVFX(direction);
         }
 
         // 데미지 처리 (Combat의 책임)
@@ -98,7 +98,10 @@ public class MonsterCombat : MonoBehaviour
         {
             return false;
         }
-        _vfxController.MonsterHitVFX(damage.HitPoint);
+
+        // Hit VFX 재생
+        _vfxController?.PlayHitVFX(damage.HitPoint);
+
         if (_stats.Health.TryConsume(damage.Value))
         {
             OnDamageReceived?.Invoke();

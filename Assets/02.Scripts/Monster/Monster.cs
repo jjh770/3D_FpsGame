@@ -32,9 +32,9 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable, IPoolable
         _move.OnDeathFinish += HandleDeathFinish;
     }
 
-    public bool TryTakeDamage(float damage)
+    public bool TryTakeDamage(Damage damage)
     {
-        return _combat.TryTakeDamage(damage);
+        return _combat.TryTakeDamage(damage.Value);
     }
 
     public void TakeKnockback(Vector3 direction, float knockbackAmount)
@@ -50,8 +50,11 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable, IPoolable
 
     public void OnSpawn()
     {
-        // 스탯 초기화 (MonsterStats에서 처리)
-        _stats?.Initialize();
+        // 주의: MonsterStats, MonsterCombat.Initialize()은 MonsterSpawner.SpawnMonster()에서 호출됨
+        // 여기서는 컴포넌트 상태만 리셋
+
+        // Move 상태 리셋
+        _move?.ResetState();
 
         // 애니메이터 리셋
         if (_animator != null)
@@ -60,7 +63,8 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable, IPoolable
             _animator.Update(0f);
         }
 
-        // StateMachine은 자동으로 Start에서 ReadyState로 시작
+        // StateMachine 초기화 (Start()는 첫 생성 시에만 호출되므로 여기서 리셋 필요)
+        _stateMachine?.ChangeState(new ReadyState(_stateMachine));
     }
 
     public void OnDespawn()

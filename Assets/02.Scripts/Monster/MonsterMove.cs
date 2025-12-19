@@ -163,6 +163,22 @@ public class MonsterMove : MonoBehaviour
         _knockbackVelocity = direction.normalized * knockbackAmount;
     }
 
+    /// <summary>
+    /// 풀에서 재스폰 시 상태 초기화
+    /// </summary>
+    public void ResetState()
+    {
+        _isDead = false;
+        _knockbackVelocity = Vector3.zero;
+
+        if (_agent != null)
+        {
+            _agent.enabled = true;
+            _agent.isStopped = false;
+            _agent.ResetPath();
+        }
+    }
+
     private void ApplyKnockback()
     {
         // 중력 업데이트

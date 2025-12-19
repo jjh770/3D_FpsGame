@@ -1254,7 +1254,7 @@ MonoBehaviour:
   _tpsDistance: 1.2
   _tpsHeightOffset: 0.7
   _tpsShoulderOffset: {x: 0.45, y: 0, z: 0}
-  _rotationSpeed: 100
+  _rotationSpeed: 300
   _followSmoothness: 10
   _rotationSmoothness: 8
   _minPitch: -45
@@ -1507,7 +1507,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &532556124
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4295,6 +4295,8 @@ MonoBehaviour:
   - {fileID: 2145783323}
   _normalCrosshair: {fileID: 962694197}
   _zoomInCrosshair: {fileID: 532556123}
+  _zoomInFOV: 10
+  _normalFOV: 60
 --- !u!114 &851221438
 MonoBehaviour:
   m_ObjectHideFlags: 0

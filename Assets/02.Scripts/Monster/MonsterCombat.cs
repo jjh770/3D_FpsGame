@@ -63,14 +63,34 @@ public class MonsterCombat : MonoBehaviour
         {
             _attackVFXPrefab = data.AttackVFXPrefab;
         }
+
+        // 전투 상태 리셋
+        ResetState();
+    }
+
+    /// <summary>
+    /// 풀에서 재스폰 시 전투 상태 초기화
+    /// </summary>
+    public void ResetState()
+    {
+        _attackTimer = 0f;
+        _isInvincible = false;
     }
 
     public void AttackVFX()
     {
+        Damage damage = new Damage()
+        {
+            Value = _stats.AttackDamage.Value,
+            HitPoint = transform.position,
+            Who = gameObject,
+            Critical = false
+        };
+
         if (_attackVFXPrefab == null)
         {
             Debug.LogWarning($"[MonsterCombat] Attack VFX prefab is not set for {gameObject.name}");
-            _player?.TryTakeDamage(_stats.AttackDamage.Value);
+            _player?.TryTakeDamage(damage);
             return;
         }
 
@@ -97,7 +117,7 @@ public class MonsterCombat : MonoBehaviour
             ObjectPool.Instance.Despawn(vfx, 1f);
         }
 
-        _player?.TryTakeDamage(_stats.AttackDamage.Value);
+        _player?.TryTakeDamage(damage);
     }
 
     public void UpdateAttackTimer(float deltaTime)

@@ -22,11 +22,11 @@ public class Drum : MonoBehaviour, IDamageable
         _health.Initialize();
     }
 
-    public bool TryTakeDamage(float damage)
+    public bool TryTakeDamage(Damage damage)
     {
         if (_health.Value <= 0) return false;
 
-        _health.Decrease(damage);
+        _health.Decrease(damage.Value);
 
         if (_health.Value <= 0)
         {
@@ -50,7 +50,14 @@ public class Drum : MonoBehaviour, IDamageable
         {
             if (collider.TryGetComponent<IDamageable>(out var damageable))
             {
-                damageable.TryTakeDamage(_damage.Value);
+                Damage damage = new Damage()
+                {
+                    Value = _damage.Value,
+                    HitPoint = transform.position,
+                    Who = gameObject,
+                    Critical = false
+                };
+                damageable.TryTakeDamage(damage);
             }
             if (collider.TryGetComponent<IKnockbackable>(out var knockbackable))
             {

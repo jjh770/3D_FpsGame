@@ -6995,7 +6995,7 @@ MonoBehaviour:
   - {fileID: 262132016}
   _useRandomSpawn: 1
   _prewarmOnStart: 1
-  _autoSpawn: 1
+  _autoSpawn: 0
   _spawnInterval: 5
   _maintainPerType: 1
 --- !u!4 &1588108227

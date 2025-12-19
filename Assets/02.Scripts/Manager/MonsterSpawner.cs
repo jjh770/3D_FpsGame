@@ -61,6 +61,15 @@ public class MonsterSpawner : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        // Tab 키로 수동 스폰
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            SpawnRandomMonsterManually();
+        }
+    }
+
     private void OnDestroy()
     {
         if (_instance == this)
@@ -321,6 +330,37 @@ public class MonsterSpawner : MonoBehaviour
     public void StopAutoSpawn()
     {
         _autoSpawn = false;
+    }
+
+    /// <summary>
+    /// 수동으로 랜덤 몬스터를 스폰합니다. (Tab 키 또는 외부 호출용)
+    /// 풀 제한을 체크하여 PoolSize를 초과하지 않습니다.
+    /// </summary>
+    private void SpawnRandomMonsterManually()
+    {
+        if (_monsterTypes == null || _monsterTypes.Length == 0)
+        {
+            Debug.LogWarning("[MonsterSpawner] No monster types assigned!");
+            return;
+        }
+
+        // 랜덤 몬스터 타입 선택
+        MonsterDataSO randomData = _monsterTypes[Random.Range(0, _monsterTypes.Length)];
+
+        // 풀 제한 체크
+        int aliveCount = GetAliveMonsterCount(randomData);
+        if (aliveCount >= randomData.PoolSize)
+        {
+            Debug.LogWarning($"[MonsterSpawner] Cannot spawn {randomData.name}: Pool limit reached ({aliveCount}/{randomData.PoolSize})");
+            return;
+        }
+
+        // 스폰
+        GameObject spawned = SpawnAtNextPoint(randomData);
+        if (spawned != null)
+        {
+            Debug.Log($"[MonsterSpawner] Manually spawned {randomData.name} ({aliveCount + 1}/{randomData.PoolSize})");
+        }
     }
 
     // ========== Spawn Point 기반 메서드 ==========

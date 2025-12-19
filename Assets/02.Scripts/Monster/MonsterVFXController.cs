@@ -85,5 +85,4 @@ public class MonsterVFXController : MonoBehaviour
             ObjectPool.Instance.Despawn(vfx, 1f);
         }
     }
-    // public void PlayDeathVFX() { }
 }

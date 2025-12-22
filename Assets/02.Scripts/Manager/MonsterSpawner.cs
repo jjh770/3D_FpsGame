@@ -24,6 +24,10 @@ public class MonsterSpawner : MonoBehaviour
     [Tooltip("시작 시 풀을 미리 생성할지 여부")]
     [SerializeField] private bool _prewarmOnStart = true;
 
+    [Header("Coin Settings")]
+    [SerializeField] private GameObject _coinPrefab;
+    [SerializeField] private int _coinPrewarmCount = 20;
+
     [Header("Auto Spawn")]
     [Tooltip("자동으로 몬스터를 스폰할지 여부")]
     [SerializeField] private bool _autoSpawn = false;
@@ -109,6 +113,40 @@ public class MonsterSpawner : MonoBehaviour
             {
                 ObjectPool.Instance.Prewarm(monsterData.HitVFXPrefab, monsterData.HitPoolSize);
             }
+        }
+
+        // Coin 프리팹 Prewarm
+        if (_coinPrefab != null)
+        {
+            ObjectPool.Instance.Prewarm(_coinPrefab, _coinPrewarmCount);
+        }
+    }
+
+    /// <summary>
+    /// 몬스터가 죽을 때 코인을 스폰합니다.
+    /// </summary>
+    /// <param name="position">코인을 스폰할 위치</param>
+    /// <param name="count">스폰할 코인 개수</param>
+    public void SpawnCoins(Vector3 position, int count)
+    {
+        if (_coinPrefab == null)
+        {
+            Debug.LogWarning("[MonsterSpawner] Coin prefab is not assigned!");
+            return;
+        }
+
+        if (count <= 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+            GameObject coin = ObjectPool.Instance.Spawn(_coinPrefab, position, Quaternion.identity);
+
+            // IPoolable 초기화
+            IPoolable poolable = coin.GetComponent<IPoolable>();
+            poolable?.OnSpawn();
         }
     }
 

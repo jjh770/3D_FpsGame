@@ -48,6 +48,13 @@ public class Monster : MonoBehaviour, IDamageable, IKnockbackable, IPoolable
 
     private void HandleDeathFinish()
     {
+        // 코인 스폰 (ObjectPool 반환 전)
+        int coinDropCount = _stats?.MonsterData?.CoinDropCount ?? 0;
+        if (coinDropCount > 0)
+        {
+            MonsterSpawner.Instance?.SpawnCoins(transform.position, coinDropCount);
+        }
+
         // MonsterSpawner에서 등록 해제 (성능 최적화)
         MonsterSpawner.Instance?.UnregisterMonster(this);
 

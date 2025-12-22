@@ -104,15 +104,16 @@ public class MonsterCombat : MonoBehaviour
 
         if (_stats.Health.TryConsume(damage.Value))
         {
+            // 체력이 남았을 때만 HitState로 전환
             OnDamageReceived?.Invoke();
+            return true;
         }
         else
         {
-            OnDamageReceived?.Invoke();
+            // 체력이 0일 때는 바로 DeathState로 전환
             OnHealthDepleted?.Invoke();
             return false;
         }
-        return true;
     }
 
     public void TakeKnockback(Vector3 direction, float amount)

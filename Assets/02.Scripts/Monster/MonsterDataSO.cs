@@ -35,6 +35,10 @@ public class MonsterDataSO : ScriptableObject
     [Tooltip("VFX 풀에 미리 생성할 개수")]
     [SerializeField] private int _hitPoolSize = 10;
 
+    [Header("Coin Drop")]
+    [Tooltip("죽을 때 드랍할 코인 개수")]
+    [SerializeField] private int _coinDropCount = 5;
+
 
     // Properties
     public GameObject Prefab => _prefab;
@@ -50,4 +54,5 @@ public class MonsterDataSO : ScriptableObject
     public int AttackPoolSize => _attackPoolSize;
     public GameObject HitVFXPrefab => _hitVFXPrefab;
     public int HitPoolSize => _hitPoolSize;
+    public int CoinDropCount => _coinDropCount;
 }

@@ -12,7 +12,10 @@ public class MonsterStats : MonoBehaviour
     [SerializeField] private ValueStat _attackCoolTime;
     [SerializeField] private ValueStat _attackDamage;
 
+    private MonsterDataSO _monsterData;
+
     public ConsumableStat Health => _health;
+    public MonsterDataSO MonsterData => _monsterData;
     public ValueStat DetectDistance => _detectDistance;
     public ValueStat TraceDistance => _traceDistance;
     public ValueStat AttackDistance => _attackDistance;
@@ -43,6 +46,9 @@ public class MonsterStats : MonoBehaviour
             Initialize();
             return;
         }
+
+        // MonsterDataSO 참조 저장
+        _monsterData = data;
 
         // Health
         _health.SetMaxValue(data.MaxHealth);

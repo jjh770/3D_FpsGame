@@ -2,6 +2,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance => _instance;
     [SerializeField] private Player _player;
     [SerializeField] private TextMeshProUGUI _stateTextUI;
+    [SerializeField] private UI_OptionPopup _optionPopup;
     private EGameState _state = EGameState.Ready;
     public event Action<EGameState> OnStateChanged;
     public EGameState State
@@ -45,9 +47,42 @@ public class GameManager : MonoBehaviour
         }
         SetState(EGameState.Ready);
         StartCoroutine(StartToPlay_Coroutine());
-        Cursor.lockState = CursorLockMode.Locked;
+        LockCursor();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Pause();
+        }
+    }
+    private void Pause()
+    {
+        UnlockCursor();
+        Time.timeScale = 0f;
+        _optionPopup.Show();
+    }
+    public void Continue()
+    {
+        LockCursor();
+        Time.timeScale = 1f;
+        _optionPopup.Hide();
+    }
+    public void Restart()
+    {
+        LockCursor();
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(0);
+    }
+    public void Quit()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit(); // 어플리케이션 종료
+#endif    
+    }
     public void SetState(EGameState newState)
     {
         State = newState;
@@ -97,5 +132,14 @@ public class GameManager : MonoBehaviour
     private void HandlePlayerDeath()
     {
         SetState(EGameState.GameOver);
+    }
+
+    private void LockCursor()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+    private void UnlockCursor()
+    {
+        Cursor.lockState = CursorLockMode.None;
     }
 }

@@ -10,6 +10,12 @@ public class PlayerGunFire : PlayerComponent
     private Animator _animator;
     private Weapon _currentWeapon;
 
+    private EZoomMode _zoomMode = EZoomMode.Normal;
+    [SerializeField] private GameObject _normalCrosshair;
+    [SerializeField] private GameObject _zoomInCrosshair;
+    [SerializeField] private float _zoomInFOV = 10f;
+    [SerializeField] private float _normalFOV = 60f;
+
     protected override void Awake()
     {
         base.Awake();
@@ -27,6 +33,7 @@ public class PlayerGunFire : PlayerComponent
         {
             EquipWeapon(0);
         }
+
     }
 
     private void Update()
@@ -62,6 +69,7 @@ public class PlayerGunFire : PlayerComponent
                 }
                 break;
         }
+        ZoomModeCheck();
         if (Input.GetKeyDown(KeyCode.R))
         {
             _currentWeapon.TryReload();
@@ -89,5 +97,23 @@ public class PlayerGunFire : PlayerComponent
         }
 
         WeaponEventChannelSO.Instance?.RaiseChangeWeapon(_currentWeapon.GetIcon());
+    }
+
+    private void ZoomModeCheck()
+    {
+        if (Input.GetMouseButton(1))
+        {
+            _zoomMode = EZoomMode.ZoomIn;
+            _normalCrosshair.SetActive(false);
+            _zoomInCrosshair.SetActive(true);
+            Camera.main.fieldOfView = _zoomInFOV;
+        }
+        else
+        {
+            _zoomMode = EZoomMode.Normal;
+            _normalCrosshair.SetActive(true);
+            _zoomInCrosshair.SetActive(false);
+            Camera.main.fieldOfView = _normalFOV;
+        }
     }
 }

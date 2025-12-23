@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4eae4e864d043f49a86beec1a235f8b, type: 3}
+  m_Name: Monster Data
+  m_EditorClassIdentifier: 
+  _prefab: {fileID: 2135200538711765005, guid: 4555f8767fb8d4d41a78c08905491bca, type: 3}
+  _poolSize: 10
+  _maxHealth: 100
+  _detectDistance: 10
+  _traceDistance: 20
+  _attackDistance: 2
+  _moveSpeed: 3.5
+  _attackCoolTime: 2
+  _attackDamage: 10
+  _attackVFXPrefab: {fileID: 5096518642833338024, guid: 251be8e1e13c965489c81f06bf9ca3ae, type: 3}
+  _attackPoolSize: 3
+  _hitVFXPrefab: {fileID: 1000013355911406, guid: d32aa916f50cac94db11e6f19821a58f, type: 3}
+  _hitPoolSize: 10
+  _coinDropCount: 30

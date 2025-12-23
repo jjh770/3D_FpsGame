@@ -29,9 +29,9 @@ public class Player : MonoBehaviour, IDamageable
         _stats = GetComponent<PlayerStats>();
     }
 
-    public bool TryTakeDamage(float damage)
+    public bool TryTakeDamage(Damage damage)
     {
-        if (!_stats.Health.TryConsume(damage))
+        if (!_stats.Health.TryConsume(damage.Value))
         {
             StartCoroutine(Death_Coroutine());
             return false;

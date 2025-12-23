@@ -168,7 +168,15 @@ public class Weapon : MonoBehaviour, IWeapon
             // -> 어차피 Monster 컴포넌트를 가지고 와야하기 때문 (2번 일 안함)
             if (hitInfo.collider.TryGetComponent<IDamageable>(out var damageable))
             {
-                damageable.TryTakeDamage(_weaponData.Damage);
+                Damage damage = new Damage()
+                {
+                    Value = _weaponData.Damage,
+                    HitPoint = hitInfo.point,
+                    Who = gameObject,
+                    Critical = false
+                };
+
+                damageable.TryTakeDamage(damage);
                 if (damageable is IKnockbackable knockbackable)
                 {
                     knockbackable.TakeKnockback(ray.direction, _weaponData.KnockbackAmount);

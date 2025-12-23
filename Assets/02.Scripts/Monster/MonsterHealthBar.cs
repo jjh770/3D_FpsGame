@@ -5,6 +5,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Monster))]
 public class MonsterHealthBar : MonoBehaviour
 {
+    private Monster _monster;
     private MonsterStats _stats;
     private MonsterCombat _combat;
     [SerializeField] private Image _fillImage;
@@ -20,12 +21,37 @@ public class MonsterHealthBar : MonoBehaviour
 
     private void Awake()
     {
+        _monster = GetComponent<Monster>();
         _stats = GetComponent<MonsterStats>();
         _combat = GetComponent<MonsterCombat>();
         _mainCamera = Camera.main;
-        _combat.OnHit += OnHitMonster;
     }
 
+    private void OnEnable()
+    {
+        if (_combat != null)
+        {
+            _combat.OnHit += OnHitMonster;
+        }
+
+        if (_monster != null)
+        {
+            _monster.OnMonsterSpawned += RefreshHealthBar;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (_combat != null)
+        {
+            _combat.OnHit -= OnHitMonster;
+        }
+
+        if (_monster != null)
+        {
+            _monster.OnMonsterSpawned -= RefreshHealthBar;
+        }
+    }
     private void OnHitMonster()
     {
         float targetValue = _stats.GetHealthPercentage();
@@ -40,6 +66,29 @@ public class MonsterHealthBar : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 스폰 시 체력바를 즉시 풀로 리셋합니다.
+    /// </summary>
+    private void RefreshHealthBar()
+    {
+        float healthPercentage = _stats.GetHealthPercentage();
+
+        // 트윈 중단
+        _fillTween?.Kill();
+        _delayTween?.Kill();
+
+        // 즉시 풀로 설정 (애니메이션 없이)
+        if (_fillImage != null)
+        {
+            _fillImage.fillAmount = healthPercentage;
+        }
+
+        if (_delayImage != null)
+        {
+            _delayImage.fillAmount = healthPercentage;
+        }
+    }
+
     // LateUpdate() 유니티 내부 계산이 끝난 뒤 '화면 갱신'을 위한 코드만 모여있을 때 주로 사용
     private void LateUpdate()
     {
@@ -51,9 +100,8 @@ public class MonsterHealthBar : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (_combat != null)
-        {
-            _combat.OnHit -= OnHitMonster;
-        }
+        // OnDisable에서 이미 구독 해제됨
+        _fillTween?.Kill();
+        _delayTween?.Kill();
     }
 }

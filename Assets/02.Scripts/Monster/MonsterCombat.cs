@@ -5,13 +5,13 @@ using UnityEngine;
 public class MonsterCombat : MonoBehaviour
 {
     [SerializeField] private PlayerReferenceSO _playerReference;
-    [SerializeField] private ParticleSystem _attackEffectVFX;
     [SerializeField] private Transform _attackTransform;
     [SerializeField] private float _hitInvincibilityTime = 0.4f;
 
     private Player _player;
     private MonsterStats _stats;
     private MonsterMove _move;
+    private MonsterVFXController _vfxController;
     private Animator _animator;
 
     private float _attackTimer = 0f;
@@ -22,10 +22,13 @@ public class MonsterCombat : MonoBehaviour
     public event Action OnDamageReceived;
     public event Action OnHealthDepleted;
 
+    public Transform AttackTransform => _attackTransform; // VFXController에서 사용
+
     private void Awake()
     {
         _stats = GetComponent<MonsterStats>();
         _move = GetComponent<MonsterMove>();
+        _vfxController = GetComponent<MonsterVFXController>();
         _animator = GetComponentInChildren<Animator>();
     }
 
@@ -52,15 +55,35 @@ public class MonsterCombat : MonoBehaviour
         //StartCoroutine(Attack_Coroutine());
     }
 
+    /// <summary>
+    /// 풀에서 재스폰 시 전투 상태 초기화
+    /// </summary>
+    public void ResetState()
+    {
+        _attackTimer = 0f;
+        _isInvincible = false;
+    }
+
     public void AttackVFX()
     {
-        Vector3 direction = (_player.transform.position - transform.position).normalized;
+        // Damage 구조체 생성
+        Damage damage = new Damage()
+        {
+            Value = _stats.AttackDamage.Value,
+            HitPoint = transform.position,
+            Who = gameObject,
+            Critical = false
+        };
 
-        _attackEffectVFX.transform.position = _attackTransform.position;
-        _attackEffectVFX.transform.rotation = Quaternion.LookRotation(direction);
-        _attackEffectVFX.Play();
+        // VFX 재생은 VFXController에게 위임
+        if (_vfxController != null && _player != null)
+        {
+            Vector3 direction = (_player.transform.position - transform.position).normalized;
+            _vfxController.PlayAttackVFX(direction);
+        }
 
-        _player.TryTakeDamage(_stats.AttackDamage.Value);
+        // 데미지 처리 (Combat의 책임)
+        _player?.TryTakeDamage(damage);
     }
 
     public void UpdateAttackTimer(float deltaTime)
@@ -68,24 +91,29 @@ public class MonsterCombat : MonoBehaviour
         _attackTimer += deltaTime;
     }
 
-    public bool TryTakeDamage(float damage)
+    public bool TryTakeDamage(Damage damage)
     {
         // 무적 상태 체크
         if (_isInvincible)
         {
             return false;
         }
-        if (_stats.Health.TryConsume(damage))
+
+        // Hit VFX 재생
+        _vfxController?.PlayHitVFX(damage.HitPoint);
+
+        if (_stats.Health.TryConsume(damage.Value))
         {
+            // 체력이 남았을 때만 HitState로 전환
             OnDamageReceived?.Invoke();
+            return true;
         }
         else
         {
-            OnDamageReceived?.Invoke();
+            // 체력이 0일 때는 바로 DeathState로 전환
             OnHealthDepleted?.Invoke();
             return false;
         }
-        return true;
     }
 
     public void TakeKnockback(Vector3 direction, float amount)
@@ -97,7 +125,6 @@ public class MonsterCombat : MonoBehaviour
     {
         _isInvincible = true;
         OnHit?.Invoke();
-
         yield return new WaitForSeconds(_hitInvincibilityTime);
 
         _isInvincible = false;

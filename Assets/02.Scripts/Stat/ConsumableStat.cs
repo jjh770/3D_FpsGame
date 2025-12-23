@@ -64,16 +64,18 @@ public class ConsumableStat
     {
         if (_value < amount)
         {
-            Consume(_value);
+            // 체력 부족: 남은 체력만큼만 소모하고 false 반환
+            SetValue(0);
             return false;
         }
 
-        Consume(amount);
+        // 체력 충분: 요청한 만큼 소모하고 true 반환
+        SetValue(_value - amount);
         return true;
     }
 
     public void Consume(float amount)
     {
-        _value -= amount;
+        SetValue(_value - amount);
     }
 }

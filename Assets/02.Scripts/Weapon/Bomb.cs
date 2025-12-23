@@ -36,7 +36,15 @@ public class Bomb : MonoBehaviour
 
                 float finalDamage = _damage / distance;
 
-                damageable.TryTakeDamage(finalDamage);
+                Damage damage = new Damage()
+                {
+                    Value = finalDamage,
+                    HitPoint = transform.position,
+                    Who = gameObject,
+                    Critical = false
+                };
+
+                damageable.TryTakeDamage(damage);
 
                 if (damageable is IKnockbackable knockbackable)
                 {

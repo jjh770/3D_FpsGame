@@ -6,32 +6,26 @@ public class PlayerMove : PlayerComponent
     [SerializeField] private CharacterMoveConfigSO _moveConfig;
     private CharacterController _controller;
     private GravityController _gravityController;
+    private PlayerAnimatorController _animatorController;
     private PlayerStats _stats;
-    private Animator _animator;
     private Camera _mainCamera;
     private int _jumpCount = 0;
     private bool _isMoving;
+
     protected override void Awake()
     {
         base.Awake();
         _controller = GetComponent<CharacterController>();
         _gravityController = GetComponent<GravityController>();
         _stats = GetComponent<PlayerStats>();
-        _animator = GetComponentInChildren<Animator>();
+        _animatorController = GetComponent<PlayerAnimatorController>();
         _mainCamera = Camera.main;
     }
 
     private void Update()
     {
         if (!CanExecute()) return;
-        if (_isMoving)
-        {
-            _animator.SetBool("IsMoving", true);
-        }
-        else
-        {
-            _animator.SetBool("IsMoving", false);
-        }
+        _animatorController.MoveAnimation(_isMoving);
         _gravityController.UpdateGravity();
         MoveAction();
         JumpAction();
@@ -46,13 +40,15 @@ public class PlayerMove : PlayerComponent
         {
             if (_jumpCount == 0 && _controller.isGrounded)
             {
-                _animator.SetTrigger("Jump");
+                _player.SetActionState(true);
+                _animatorController.JumpAnimation();
                 _gravityController.Jump(_stats.JumpPower.Value);
                 _jumpCount = 1;
             }
             else if (_jumpCount == 1 && _stats.Stamina.TryConsume(_moveConfig.JumpStamina))
             {
-                _animator.SetTrigger("Jump");
+                _player.SetActionState(true);
+                _animatorController.JumpAnimation();
                 _gravityController.Jump(_stats.JumpPower.Value);
                 _jumpCount = 2;
             }
@@ -76,5 +72,10 @@ public class PlayerMove : PlayerComponent
             moveSpeed = _stats.SprintSpeed.Value;
         }
         _controller.Move(direction * moveSpeed * Time.deltaTime);
+    }
+
+    public void FinishJumpAnimation()
+    {
+        _player.SetActionState(false);
     }
 }

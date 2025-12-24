@@ -13,12 +13,14 @@ public class PlayerBombFire : PlayerComponent
     [SerializeField] private float _throwPower = 15f;
 
     private PlayerStats _stats;
+    private PlayerAnimatorController _animatorController;
     private Camera _mainCamera;
 
     protected override void Awake()
     {
         base.Awake();
         _stats = GetComponent<PlayerStats>();
+        _animatorController = GetComponent<PlayerAnimatorController>();
         _mainCamera = Camera.main;
     }
     private void Start()
@@ -32,13 +34,23 @@ public class PlayerBombFire : PlayerComponent
         if (Input.GetMouseButtonDown(1))
         {
             if (_stats.BombCount.IsEmpty()) return;
-
-            _stats.BombCount.TryConsume();
-            BombUIChange();
-            GameObject bomb = ObjectPool.Instance.Spawn(_bombPrefab.gameObject, _fireTransform.position, Quaternion.identity);
-            Rigidbody bombRigidbody = bomb.GetComponent<Rigidbody>();
-            bombRigidbody.AddForce(_mainCamera.transform.forward * _throwPower, ForceMode.Impulse);
+            _player.SetActionState(true);
+            _animatorController.ThrowAnimation();
         }
+    }
+
+    public void ThrowBomb()
+    {
+        _stats.BombCount.TryConsume();
+        BombUIChange();
+        GameObject bomb = ObjectPool.Instance.Spawn(_bombPrefab.gameObject, _fireTransform.position, Quaternion.identity);
+        Rigidbody bombRigidbody = bomb.GetComponent<Rigidbody>();
+        bombRigidbody.AddForce(_mainCamera.transform.forward * _throwPower, ForceMode.Impulse);
+    }
+
+    public void FinishThrowBomb()
+    {
+        _player.SetActionState(false);
     }
 
     private void BombUIChange()

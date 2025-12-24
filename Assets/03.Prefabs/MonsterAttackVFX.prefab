@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 638725492279303333}
   - component: {fileID: 7445306649418918486}
   - component: {fileID: 279291100284909419}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: slash_b (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4856,7 +4856,7 @@ GameObject:
   - component: {fileID: 8189949691173265712}
   - component: {fileID: 4896055480117416511}
   - component: {fileID: 8665882391076713031}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: slash_a (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9759,7 +9759,7 @@ GameObject:
   - component: {fileID: 2040669346359570769}
   - component: {fileID: 8079697992318018502}
   - component: {fileID: 504472305921333163}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: MonsterAttackVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14605,7 +14605,7 @@ GameObject:
   - component: {fileID: 4533314301618258671}
   - component: {fileID: 6399554767585092089}
   - component: {fileID: 5764739313429886921}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: eff
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19512,7 +19512,7 @@ GameObject:
   - component: {fileID: 425329442686398119}
   - component: {fileID: 2749730937164179522}
   - component: {fileID: 4962452516691886383}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: A35 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24415,7 +24415,7 @@ GameObject:
   - component: {fileID: 670897552126404315}
   - component: {fileID: 3216459387112549089}
   - component: {fileID: 1649591720662151255}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: slash_a (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

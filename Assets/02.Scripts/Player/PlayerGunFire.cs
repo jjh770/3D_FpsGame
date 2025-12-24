@@ -9,7 +9,7 @@ public class PlayerGunFire : PlayerComponent
     [SerializeField] private List<Weapon> _weapons = new List<Weapon>();
     private Animator _animator;
     private Weapon _currentWeapon;
-
+    private bool _canPerform = true;
     private EZoomMode _zoomMode = EZoomMode.Normal;
     [SerializeField] private GameObject _normalCrosshair;
     [SerializeField] private GameObject _zoomInCrosshair;
@@ -26,7 +26,19 @@ public class PlayerGunFire : PlayerComponent
         }
         _animator = GetComponentInChildren<Animator>();
     }
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        if (_player != null)
+            _player.OnActionStateChanged += HandleActionStateChanged;
+    }
 
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        if (_player != null)
+            _player.OnActionStateChanged -= HandleActionStateChanged;
+    }
     private void Start()
     {
         if (_weapons.Count > 0)
@@ -38,12 +50,16 @@ public class PlayerGunFire : PlayerComponent
     private void Update()
     {
         if (!CanShoot()) return;
+        if (!CanPerform()) return;
         Shooting();
         ZoomModeCheck();
         Reloading();
         WeaponSwitching();
     }
-
+    private void HandleActionStateChanged(bool isPerforming)
+    {
+        _canPerform = !isPerforming;
+    }
     private void Shooting()
     {
         bool shouldFire = false;
@@ -91,6 +107,11 @@ public class PlayerGunFire : PlayerComponent
         return !EventSystem.current.IsPointerOverGameObject()
             && CanExecute()
             && _currentWeapon != null;
+    }
+
+    private bool CanPerform()
+    {
+        return _canPerform;
     }
 
     private void EquipWeapon(int index)

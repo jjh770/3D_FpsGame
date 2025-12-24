@@ -15,6 +15,7 @@ public class CameraFollow : MonoBehaviour
 
     [Header("Camera Mode Settings")]
     [SerializeField] private CameraRotate _cameraRotate;
+    [SerializeField] private PlayerRotate _playerRotate;
     [SerializeField] private ECameraMode _currentMode = ECameraMode.FPS;
 
     [Header("TPS View Settings")]
@@ -102,7 +103,17 @@ public class CameraFollow : MonoBehaviour
         {
             case ECameraMode.FPS:
                 // FPS 모드: CameraRotate 활성화
-                if (_cameraRotate != null) _cameraRotate.enabled = true;
+                if (_cameraRotate != null)
+                {
+                    _cameraRotate.enabled = true;
+                    // TPS에서 FPS로 전환 시 카메라 각도 동기화
+                    _cameraRotate.SyncRotation(_currentYaw, _currentPitch);
+                }
+                if (_playerRotate != null)
+                {
+                    // 플레이어 회전도 동기화
+                    _playerRotate.SyncRotation(_currentYaw);
+                }
                 _camera.cullingMask &= ~(1 << LayerMask.NameToLayer("Player"));
                 Debug.Log("카메라 모드: FPS");
                 break;
@@ -110,7 +121,6 @@ public class CameraFollow : MonoBehaviour
             case ECameraMode.TPS:
                 // TPS 모드: CameraRotate 비활성화
                 if (_cameraRotate != null) _cameraRotate.enabled = false;
-
                 _camera.cullingMask |= (1 << LayerMask.NameToLayer("Player"));
                 InitializeTPSAngles();
                 Debug.Log("카메라 모드: TPS");
@@ -122,10 +132,24 @@ public class CameraFollow : MonoBehaviour
     {
         if (_player == null) return;
 
-        // 플레이어 뒤쪽에서 시작 (배틀그라운드 스타일)
+        // FPS에서 TPS로 전환 시 현재 플레이어 방향으로 초기화
         _currentYaw = _player.transform.eulerAngles.y;
         _targetYaw = _currentYaw;
-        _currentPitch = 10f; // 약간 위에서 시작
+
+        // 카메라의 현재 pitch 값을 가져오기 (FPS에서 전환 시)
+        if (_cameraRotate != null && !_cameraRotate.enabled)
+        {
+            // CameraRotate가 비활성화되기 전의 pitch 값 사용
+            float currentCameraPitch = transform.eulerAngles.x;
+            // 0~360도를 -90~90도로 변환
+            if (currentCameraPitch > 180f) currentCameraPitch -= 360f;
+            _currentPitch = -currentCameraPitch; // CameraRotate는 -pitch를 X에 적용하므로 반전
+            _currentPitch = Mathf.Clamp(_currentPitch, _minPitch, _maxPitch);
+        }
+        else
+        {
+            _currentPitch = 10f; // 기본값
+        }
         _targetPitch = _currentPitch;
     }
 

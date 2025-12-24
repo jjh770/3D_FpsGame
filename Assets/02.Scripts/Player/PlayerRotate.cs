@@ -11,6 +11,11 @@ public class PlayerRotate : PlayerComponent
         base.Awake();
     }
 
+    public void SyncRotation(float yaw)
+    {
+        _accumulationX = yaw;
+    }
+
     private void Update()
     {
         if (!CanExecute()) return;

@@ -7,7 +7,8 @@
       "Bash(if [ -f \"C:\\SAY_JJH\\skku2_3dgame\\Assets\\02.Scripts\\Player\\PlayerMove_1.cs.meta\" ])",
       "Bash(then mv \"C:\\SAY_JJH\\skku2_3dgame\\Assets\\02.Scripts\\Player\\PlayerMove_1.cs.meta\" \"C:\\SAY_JJH\\skku2_3dgame\\Assets\\02.Scripts\\Player\\PlayerMove.cs.meta\")",
       "Bash(fi)",
-      "Bash(ls -la \"C:\\SAY_JJH\\skku2_3dgame\\Assets\\02.Scripts\\Player\"\" | grep -E \"PlayerMove \")"
+      "Bash(ls -la \"C:\\SAY_JJH\\skku2_3dgame\\Assets\\02.Scripts\\Player\"\" | grep -E \"PlayerMove \")",
+      "Bash(git checkout:*)"
     ]
   }
 }

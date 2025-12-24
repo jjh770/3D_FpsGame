@@ -17,7 +17,6 @@ public class ObjectPool : MonoBehaviour
             return;
         }
         _instance = this;
-        //DontDestroyOnLoad(gameObject); // 선택사항: 씬 전환 시에도 유지
     }
 
     public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation)

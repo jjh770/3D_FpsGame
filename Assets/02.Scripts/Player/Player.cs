@@ -23,6 +23,8 @@ public class Player : MonoBehaviour, IDamageable
 
     private bool _isPerformingAction = false;
 
+    [SerializeField] private float _deathAnimationDelay = 2f;
+
     private void Awake()
     {
         // PlayerReferenceSO에 자신을 등록
@@ -56,7 +58,7 @@ public class Player : MonoBehaviour, IDamageable
         // 플레이어 입력 비활성화
         OnPlayerDeath?.Invoke();
         PlayerDeathAnimation();
-        yield return new WaitForSeconds(2f); // 사망 연출 대기
+        yield return new WaitForSeconds(_deathAnimationDelay); // 사망 연출 대기
         OnPlayerDeathComplete?.Invoke();
     }
 

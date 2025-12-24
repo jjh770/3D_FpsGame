@@ -49,18 +49,18 @@ public class BulletTracer : MonoBehaviour
     {
         _travelTimer += Time.deltaTime;
 
-        // 🔴 현재 총알 위치 계산
+        // 현재 총알 위치 계산
         float travelDistance = _bulletSpeed * _travelTimer;
 
-        // 🔴 총알 시작점과 끝점 계산
+        // 총알 시작점과 끝점 계산
         Vector3 bulletFront = _startPoint + _direction * travelDistance;
         Vector3 bulletBack = _startPoint + _direction * Mathf.Max(0, travelDistance - _bulletLength);
 
-        // 🔴 LineRenderer 업데이트
+        // LineRenderer 업데이트
         _lineRenderer.SetPosition(0, bulletBack);
         _lineRenderer.SetPosition(1, bulletFront);
 
-        // 🔴 목표 지점 도달하면 풀로 반환
+        // 목표 지점 도달하면 풀로 반환
         if (travelDistance >= _totalDistance)
         {
             ObjectPool.Instance.Despawn(gameObject);

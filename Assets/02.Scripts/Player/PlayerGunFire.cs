@@ -37,7 +37,7 @@ public class PlayerGunFire : PlayerComponent
 
     private void Update()
     {
-        CanShoot();
+        if (!CanShoot()) return;
         Shooting();
         ZoomModeCheck();
         Reloading();

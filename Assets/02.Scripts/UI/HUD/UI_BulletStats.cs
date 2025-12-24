@@ -54,24 +54,24 @@ public class UI_BulletStats : MonoBehaviour
 
     private void OnReload(float reloadTime)
     {
-        if (_reloadCoroutine != null)
-        {
-            StopCoroutine(_reloadCoroutine);
-        }
-
+        StopReloadCoroutine();
         _reloadCoroutine = StartCoroutine(ReloadCoroutine(reloadTime));
     }
 
     private void OnReloadCancel()
     {
-        if (_reloadCoroutine != null)
-        {
-            StopCoroutine(_reloadCoroutine);
-        }
+        StopReloadCoroutine();
         _reloadIcon.fillAmount = 0f;
         _reloadIcon.gameObject.SetActive(false);
     }
-
+    private void StopReloadCoroutine()
+    {
+        if (_reloadCoroutine != null)
+        {
+            StopCoroutine(_reloadCoroutine);
+            _reloadCoroutine = null;
+        }
+    }
     private IEnumerator ReloadCoroutine(float reloadTime)
     {
         if (_reloadIcon == null) yield break;

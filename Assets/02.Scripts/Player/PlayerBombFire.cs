@@ -16,6 +16,10 @@ public class PlayerBombFire : PlayerComponent
     private PlayerAnimatorController _animatorController;
     private Camera _mainCamera;
 
+    [Header("Rotation Settings")]
+    [SerializeField] private float _minTorque = 5f;
+    [SerializeField] private float _maxTorque = 15f;
+
     protected override void Awake()
     {
         base.Awake();
@@ -46,6 +50,12 @@ public class PlayerBombFire : PlayerComponent
         GameObject bomb = ObjectPool.Instance.Spawn(_bombPrefab.gameObject, _fireTransform.position, Quaternion.identity);
         Rigidbody bombRigidbody = bomb.GetComponent<Rigidbody>();
         bombRigidbody.AddForce(_mainCamera.transform.forward * _throwPower, ForceMode.Impulse);
+        Vector3 randomTorque = new Vector3(
+            Random.Range(_minTorque, _maxTorque),
+            Random.Range(_minTorque, _maxTorque),
+            Random.Range(_minTorque, _maxTorque)
+        );
+        bombRigidbody.AddTorque(randomTorque, ForceMode.Impulse);
     }
 
     public void FinishThrowBomb()

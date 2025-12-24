@@ -7,7 +7,6 @@ public class MonsterHealthBar : MonoBehaviour
 {
     private Monster _monster;
     private MonsterStats _stats;
-    private MonsterCombat _combat;
     [SerializeField] private Image _fillImage;
     [SerializeField] private Image _delayImage;
     [SerializeField] private Transform _healthBarTransform;
@@ -23,15 +22,14 @@ public class MonsterHealthBar : MonoBehaviour
     {
         _monster = GetComponent<Monster>();
         _stats = GetComponent<MonsterStats>();
-        _combat = GetComponent<MonsterCombat>();
         _mainCamera = Camera.main;
     }
 
     private void OnEnable()
     {
-        if (_combat != null)
+        if (_stats != null)
         {
-            _combat.OnHit += OnHitMonster;
+            _stats.Health.OnValueChanged += UpdateHealthBar;
         }
 
         if (_monster != null)
@@ -42,9 +40,9 @@ public class MonsterHealthBar : MonoBehaviour
 
     private void OnDisable()
     {
-        if (_combat != null)
+        if (_stats != null)
         {
-            _combat.OnHit -= OnHitMonster;
+            _stats.Health.OnValueChanged -= UpdateHealthBar;
         }
 
         if (_monster != null)
@@ -52,9 +50,10 @@ public class MonsterHealthBar : MonoBehaviour
             _monster.OnMonsterSpawned -= RefreshHealthBar;
         }
     }
-    private void OnHitMonster()
+
+    private void UpdateHealthBar(float current, float max)
     {
-        float targetValue = _stats.GetHealthPercentage();
+        float targetValue = max > 0 ? current / max : 0;
 
         _fillTween?.Kill();
         _fillTween = _fillImage.DOFillAmount(targetValue, _fillDuration);

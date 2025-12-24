@@ -81,9 +81,8 @@ public class Weapon : MonoBehaviour, IWeapon
 
     public bool TryShoot()
     {
-        if (_timer < _weaponData.CoolTime) return false;
-        if (_isReloading) return false;
-        if (_bulletCount.IsEmpty()) return false;
+        if (!CanShoot())
+            return false;
 
         _bulletCount.TryConsume();
         BulletUIChange();
@@ -92,6 +91,11 @@ public class Weapon : MonoBehaviour, IWeapon
         TriggerRebound();
         _timer = 0f;
         return true;
+    }
+
+    private bool CanShoot()
+    {
+        return (_timer >= _weaponData.CoolTime) && (!_isReloading) && (!_bulletCount.IsEmpty());
     }
 
     public void TryReload()

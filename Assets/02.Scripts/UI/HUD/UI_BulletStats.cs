@@ -25,6 +25,7 @@ public class UI_BulletStats : MonoBehaviour
         {
             WeaponEventChannelSO.Instance.OnAmmoChanged += OnAmmoChanged;
             WeaponEventChannelSO.Instance.OnReload += OnReload;
+            WeaponEventChannelSO.Instance.OnReloadCancel += OnReloadCancel;
             WeaponEventChannelSO.Instance.OnChangeWeapon += OnChangeIcon;
         }
     }
@@ -35,6 +36,7 @@ public class UI_BulletStats : MonoBehaviour
         {
             WeaponEventChannelSO.Instance.OnAmmoChanged -= OnAmmoChanged;
             WeaponEventChannelSO.Instance.OnReload -= OnReload;
+            WeaponEventChannelSO.Instance.OnReloadCancel -= OnReloadCancel;
             WeaponEventChannelSO.Instance.OnChangeWeapon -= OnChangeIcon;
         }
     }
@@ -52,12 +54,23 @@ public class UI_BulletStats : MonoBehaviour
 
     private void OnReload(float reloadTime)
     {
+        StopReloadCoroutine();
+        _reloadCoroutine = StartCoroutine(ReloadCoroutine(reloadTime));
+    }
+
+    private void OnReloadCancel()
+    {
+        StopReloadCoroutine();
+        _reloadIcon.fillAmount = 0f;
+        _reloadIcon.gameObject.SetActive(false);
+    }
+    private void StopReloadCoroutine()
+    {
         if (_reloadCoroutine != null)
         {
             StopCoroutine(_reloadCoroutine);
+            _reloadCoroutine = null;
         }
-
-        _reloadCoroutine = StartCoroutine(ReloadCoroutine(reloadTime));
     }
     private IEnumerator ReloadCoroutine(float reloadTime)
     {

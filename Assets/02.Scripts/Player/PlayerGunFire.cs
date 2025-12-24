@@ -33,55 +33,64 @@ public class PlayerGunFire : PlayerComponent
         {
             EquipWeapon(0);
         }
-
     }
 
     private void Update()
     {
-        if (EventSystem.current.IsPointerOverGameObject())
-        {
-            return; // UI 클릭이므로 총을 쏘지 않음
-        }
-        if (!CanExecute()) return;
-
-        if (_currentWeapon == null) return;
-
-        // 1. 마우스 왼쪽 버튼이 눌린다면
-        switch (_currentWeapon.FireMode)
-        {
-            case FireMode.SemiAuto:
-                if (Input.GetMouseButtonDown(0))
-                {
-                    if (_currentWeapon.TryShoot())
-                    {
-                        _animator.SetTrigger("GunFire");
-                    }
-                }
-                break;
-
-            case FireMode.FullAuto:
-                if (Input.GetMouseButton(0))
-                {
-                    if (_currentWeapon.TryShoot())
-                    {
-                        _animator.SetTrigger("GunFire");
-                    }
-                }
-                break;
-        }
+        if (!CanShoot()) return;
+        Shooting();
         ZoomModeCheck();
-        if (Input.GetKeyDown(KeyCode.R))
+        Reloading();
+        WeaponSwitching();
+    }
+
+    private void Shooting()
+    {
+        bool shouldFire = false;
+
+        // FireMode에 따라 다른 입력 처리
+        if (_currentWeapon.FireMode == FireMode.SemiAuto)
         {
-            _currentWeapon.TryReload();
+            // 반자동: 클릭마다 한 발
+            shouldFire = Input.GetMouseButtonDown(0);
         }
+        else if (_currentWeapon.FireMode == FireMode.FullAuto)
+        {
+            // 완전 자동: 누르고 있는 동안 연사
+            shouldFire = Input.GetMouseButton(0);
+        }
+
+        if (shouldFire && _currentWeapon.TryShoot())
+        {
+            _animator.SetTrigger("GunFire");
+        }
+    }
+    private void WeaponSwitching()
+    {
         for (int i = 0; i < _weapons.Count && i < 9; i++)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1 + i))
             {
+                WeaponEventChannelSO.Instance.RaiseReloadCancel();
                 EquipWeapon(i);
                 break;
             }
         }
+    }
+
+    private void Reloading()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            _currentWeapon.TryReload();
+        }
+    }
+
+    private bool CanShoot()
+    {
+        return !EventSystem.current.IsPointerOverGameObject()
+            && CanExecute()
+            && _currentWeapon != null;
     }
 
     private void EquipWeapon(int index)

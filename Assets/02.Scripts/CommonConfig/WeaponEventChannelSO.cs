@@ -36,6 +36,7 @@ public class WeaponEventChannelSO : ScriptableObject
     public event Action<int, int> OnAmmoChanged;
     public event Action<int> OnConsumableChanged;
     public event Action<float> OnReload;
+    public event Action OnReloadCancel;
     public event Action<Sprite> OnChangeWeapon;
     public event Action<Vector3> OnReboundCamera;
 
@@ -53,6 +54,11 @@ public class WeaponEventChannelSO : ScriptableObject
     public void RaiseReload(float reloadTime)
     {
         OnReload?.Invoke(reloadTime);
+    }
+
+    public void RaiseReloadCancel()
+    {
+        OnReloadCancel?.Invoke();
     }
 
     public void RaiseChangeWeapon(Sprite weaponIcon)
@@ -75,5 +81,6 @@ public class WeaponEventChannelSO : ScriptableObject
         OnReload = null;
         OnChangeWeapon = null;
         OnReboundCamera = null;
+        OnReloadCancel = null;
     }
 }

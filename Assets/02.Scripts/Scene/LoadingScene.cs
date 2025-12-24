@@ -17,7 +17,7 @@ public class LoadingScene : MonoBehaviour
     private IEnumerator LoadScene_Coroutine()
     {
         // LoadSceneAsync는 씬 로드 상황에 대한 데이터를 가지고 있는 객체를 반환한다.
-        AsyncOperation ao = SceneManager.LoadSceneAsync("FPSScene");
+        AsyncOperation ao = SceneManager.LoadSceneAsync("DecorateFPSScene");
 
         // 로드되는 씬의 모습이 화면에 안보이게 하기
         ao.allowSceneActivation = false;

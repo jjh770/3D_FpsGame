@@ -31,6 +31,13 @@ public class CameraRotate : MonoBehaviour
         _canRotate = true;
         _camera = GetComponent<Camera>();
     }
+
+    public void SyncRotation(float yaw, float pitch)
+    {
+        _accumulationX = yaw;
+        _accumulationY = pitch;
+    }
+
     private void OnEnable()
     {
         if (WeaponEventChannelSO.Instance != null)

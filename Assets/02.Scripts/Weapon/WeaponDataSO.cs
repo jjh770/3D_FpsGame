@@ -32,6 +32,14 @@ public class WeaponDataSO : ScriptableObject
     [SerializeField] private int _maxBulletCount = 30;
     [SerializeField] private int _maxBulletClipCount = 120;
 
+    [Header("Range Settings")]
+    [SerializeField] private float _maxRange = 100f;
+
+    [Header("Tracer Settings")]
+    [SerializeField] private float _bulletSpeed = 300f; // 총알 속도
+    [SerializeField] private float _bulletLength = 2f; // 총알 궤적 길이
+    [SerializeField] private float _tracerWidth = 0.02f;
+
     public FireMode FireMode => _fireMode;
     public Sprite SpriteIcon => _spriteIcon;
     public float Damage => _damage;
@@ -45,7 +53,10 @@ public class WeaponDataSO : ScriptableObject
     public float ReboundRecover => _reboundRecover;
     public Vector2 ReboundRotation => _reboundRotation;
     public float KnockbackAmount => _knockbackAmount;
-
+    public float MaxRange => _maxRange;
+    public float BulletSpeed => _bulletSpeed;
+    public float BulletLength => _bulletLength;
+    public float TracerWidth => _tracerWidth;
     public Vector3 CalculateRebound()
     {
         float reboundX = _reboundRotation.x * _reboundAmount;

@@ -24,3 +24,7 @@ MonoBehaviour:
   _knockbackAmount: 3
   _maxBulletCount: 30
   _maxBulletClipCount: 120
+  _maxRange: 50
+  _bulletSpeed: 200
+  _bulletLength: 3
+  _tracerWidth: 0.02

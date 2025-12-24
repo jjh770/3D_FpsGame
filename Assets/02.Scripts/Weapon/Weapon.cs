@@ -15,6 +15,9 @@ public class Weapon : MonoBehaviour, IWeapon
     [Header("Fire Effects")]
     [SerializeField] private GameObject[] _muzzleFlashPrefabs; // 5개 할당
 
+    [Header("Tracer Settings")]
+    [SerializeField] private BulletTracer _tracerPrefab; // LineRenderer 프리팹
+
     // 런타임 상태 (각 인스턴스마다 독립적)
     private ResourceStat _bulletCount;
     private ResourceStat _bulletClipCount;
@@ -34,6 +37,7 @@ public class Weapon : MonoBehaviour, IWeapon
     {
         BulletUIChange();
         PrewarmMuzzleFlash(); // 추가
+        PrewarmTracer();
     }
 
     private void OnEnable()
@@ -69,6 +73,13 @@ public class Weapon : MonoBehaviour, IWeapon
         foreach (var prefab in _muzzleFlashPrefabs)
         {
             ObjectPool.Instance.Prewarm(prefab, 3);
+        }
+    }
+    private void PrewarmTracer()
+    {
+        if (_tracerPrefab != null)
+        {
+            ObjectPool.Instance.Prewarm(_tracerPrefab.gameObject, 10);
         }
     }
 
@@ -159,10 +170,18 @@ public class Weapon : MonoBehaviour, IWeapon
         // RayCastHit(충돌한 대상의 정보)를 저장할 변수
         RaycastHit hitInfo;
 
-        // 발사하고 충돌 여부 확인
-        bool isHit = Physics.Raycast(ray, out hitInfo);
+        // 최대 사거리 제한
+        bool isHit = Physics.Raycast(ray, out hitInfo, _weaponData.MaxRange);
+
+        // 시작점과 끝점 계산
+        Vector3 startPoint = _fireTransform.position;
+        Vector3 endPoint;
+
         if (isHit)
         {
+            // 맞았으면 히트 지점까지
+            endPoint = hitInfo.point;
+
             // 충돌했다면 피격 이펙트 표시
             _hitEffectVFX.transform.position = hitInfo.point;
             _hitEffectVFX.transform.forward = hitInfo.normal;
@@ -187,7 +206,27 @@ public class Weapon : MonoBehaviour, IWeapon
                 }
             }
         }
+        else
+        {
+            endPoint = ray.origin + ray.direction * _weaponData.MaxRange;
+        }
+        CreateTracer(startPoint, endPoint);
     }
+
+    private void CreateTracer(Vector3 start, Vector3 end)
+    {
+        if (_tracerPrefab == null) return;
+
+        GameObject tracerObj = ObjectPool.Instance.Spawn(
+            _tracerPrefab.gameObject,
+            Vector3.zero,
+            Quaternion.identity
+        );
+
+        BulletTracer tracer = tracerObj.GetComponent<BulletTracer>();
+        tracer.Initialize(start, end, _weaponData.BulletSpeed, _weaponData.BulletLength, _weaponData.TracerWidth);
+    }
+
     private void TriggerRebound()
     {
         Vector3 rebound = _weaponData.CalculateRebound();

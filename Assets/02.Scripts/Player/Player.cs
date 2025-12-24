@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(PlayerAnimatorController))]
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerStats))]
 [RequireComponent(typeof(PlayerMove))]
@@ -11,12 +12,18 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private PlayerReferenceSO _playerReference;
 
     private PlayerStats _stats;
+    private PlayerAnimatorController _animatorController;
     public event Action OnHitPlayer;
     public event Action OnPlayerDeath;
     public event Action OnPlayerDeathComplete;
+    public event Action<bool> OnActionStateChanged;
 
     private Tween _fallRotateTween;
     private Tween _fallMoveTween;
+
+    private bool _isPerformingAction = false;
+
+    [SerializeField] private float _deathAnimationDelay = 2f;
 
     private void Awake()
     {
@@ -25,8 +32,14 @@ public class Player : MonoBehaviour, IDamageable
         {
             _playerReference.Current = this;
         }
-
+        _animatorController = GetComponent<PlayerAnimatorController>();
         _stats = GetComponent<PlayerStats>();
+    }
+
+    public void SetActionState(bool isPerforming)
+    {
+        _isPerformingAction = isPerforming;
+        OnActionStateChanged?.Invoke(isPerforming);
     }
 
     public bool TryTakeDamage(Damage damage)
@@ -44,24 +57,14 @@ public class Player : MonoBehaviour, IDamageable
     {
         // 플레이어 입력 비활성화
         OnPlayerDeath?.Invoke();
-        FallPlayer();
-        yield return new WaitForSeconds(2f); // 사망 연출 대기
+        PlayerDeathAnimation();
+        yield return new WaitForSeconds(_deathAnimationDelay); // 사망 연출 대기
         OnPlayerDeathComplete?.Invoke();
     }
 
-    private void FallPlayer()
+    private void PlayerDeathAnimation()
     {
-        // 오른쪽 or 왼쪽으로 쓰러지기 (90도 회전)
-        float fallDirection = UnityEngine.Random.value > 0.5f ? 90f : -90f;
-
-        _fallRotateTween?.Kill();
-        _fallRotateTween = transform.DORotate(new Vector3(0, 0, fallDirection), 1f)
-            .SetEase(Ease.InQuad);
-
-        // 약간 아래로도 이동 (선택사항)
-        _fallMoveTween?.Kill();
-        _fallMoveTween = transform.DOMoveY(transform.position.y - 0.5f, 1f)
-            .SetEase(Ease.InQuad);
+        _animatorController.DeathAnimation();
     }
 
     private void OnDestroy()

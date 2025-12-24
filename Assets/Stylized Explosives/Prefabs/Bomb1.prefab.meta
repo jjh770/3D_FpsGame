@@ -1,8 +1,7 @@
 fileFormatVersion: 2
-guid: 10fc4df2da32a41aaa32d77bc913491c
-NativeFormatImporter:
+guid: a9d97e5be5bb16c4fa385627ddb9516b
+PrefabImporter:
   externalObjects: {}
-  mainObjectFileID: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
@@ -10,6 +9,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 287118
   packageName: Stylized Explosives AAA
-  packageVersion: 
-  assetPath: Assets/Settings/SampleSceneProfile.asset
-  uploadId: 0
+  packageVersion: 1.0
+  assetPath: Assets/Stylized Explosives/Prefabs/Bomb1.prefab
+  uploadId: 672483

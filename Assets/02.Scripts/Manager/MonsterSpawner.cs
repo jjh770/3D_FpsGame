@@ -15,10 +15,9 @@ public class MonsterSpawner : MonoBehaviour
     [Header("Monster Types")]
     [SerializeField] private MonsterDataSO[] _monsterTypes;
 
-    [Header("Spawn Points")]
-    [SerializeField] private Transform[] _spawnPoints;
-    [Tooltip("true: 랜덤 선택, false: 순차 선택")]
-    [SerializeField] private bool _useRandomSpawn = true;
+    [Header("Patrol Paths")]
+    [Tooltip("몬스터가 사용할 패트롤 경로 리스트")]
+    [SerializeField] private PatrolPathSO[] _patrolPaths;
 
     [Header("Prewarm Settings")]
     [Tooltip("시작 시 풀을 미리 생성할지 여부")]
@@ -35,8 +34,6 @@ public class MonsterSpawner : MonoBehaviour
     [SerializeField] private float _spawnInterval = 3f;
     [Tooltip("각 몬스터 타입별로 PoolSize만큼 유지 (true) 또는 전체 합산 (false)")]
     [SerializeField] private bool _maintainPerType = true;
-
-    private int _currentSpawnIndex = 0;
 
     // 살아있는 몬스터 추적 (성능 최적화)
     private Dictionary<string, List<Monster>> _activeMonsters = new Dictionary<string, List<Monster>>();
@@ -189,6 +186,16 @@ public class MonsterSpawner : MonoBehaviour
             combat.ResetState();
         }
 
+        // 패트롤 경로 랜덤 설정
+        MonsterPatrol patrol = monsterObj.GetComponent<MonsterPatrol>();
+        if (patrol != null && _patrolPaths != null && _patrolPaths.Length > 0)
+        {
+            // 랜덤하게 패트롤 경로 선택
+            PatrolPathSO randomPath = _patrolPaths[Random.Range(0, _patrolPaths.Length)];
+            patrol.SetPatrolPath(randomPath);
+            Debug.Log($"[MonsterSpawner] {monsterObj.name}에 패트롤 경로 '{randomPath.PathName}' 할당 및 WayPoint0으로 스폰");
+        }
+
         // 살아있는 몬스터 리스트에 등록
         Monster monster = monsterObj.GetComponent<Monster>();
         if (monster != null)
@@ -325,7 +332,7 @@ public class MonsterSpawner : MonoBehaviour
 
                     if (aliveCount < monsterData.PoolSize)
                     {
-                        GameObject spawned = SpawnAtNextPoint(monsterData);
+                        GameObject spawned = SpawnMonster(monsterData, Vector3.zero);
                         if (spawned != null)
                         {
                             Debug.Log($"[MonsterSpawner] Auto spawned {monsterData.name} ({aliveCount + 1}/{monsterData.PoolSize})");
@@ -341,7 +348,7 @@ public class MonsterSpawner : MonoBehaviour
 
                 if (totalAlive < totalPoolSize)
                 {
-                    GameObject spawned = SpawnRandomMonsterAtNextPoint();
+                    GameObject spawned = SpawnRandomMonster(Vector3.zero);
                     if (spawned != null)
                     {
                         Debug.Log($"[MonsterSpawner] Auto spawned random monster ({totalAlive + 1}/{totalPoolSize})");
@@ -397,123 +404,11 @@ public class MonsterSpawner : MonoBehaviour
         }
 
         // 스폰
-        GameObject spawned = SpawnAtNextPoint(randomData);
+        GameObject spawned = SpawnMonster(randomData, Vector3.zero);
         if (spawned != null)
         {
             Debug.Log($"[MonsterSpawner] Manually spawned {randomData.name} ({aliveCount + 1}/{randomData.PoolSize})");
         }
     }
 
-    // ========== Spawn Point 기반 메서드 ==========
-
-    /// <summary>
-    /// 다음 스폰 포인트 위치를 가져옵니다.
-    /// </summary>
-    private Vector3 GetNextSpawnPosition()
-    {
-        if (_spawnPoints == null || _spawnPoints.Length == 0)
-        {
-            Debug.LogWarning("[MonsterSpawner] No spawn points assigned! Using spawner position.");
-            return transform.position;
-        }
-
-        Transform selectedPoint;
-
-        if (_useRandomSpawn)
-        {
-            // 랜덤 선택
-            selectedPoint = _spawnPoints[Random.Range(0, _spawnPoints.Length)];
-        }
-        else
-        {
-            // 순차 선택 (Round-robin)
-            selectedPoint = _spawnPoints[_currentSpawnIndex];
-            _currentSpawnIndex = (_currentSpawnIndex + 1) % _spawnPoints.Length;
-        }
-
-        return selectedPoint.position;
-    }
-
-    /// <summary>
-    /// 스폰 포인트를 사용하여 특정 몬스터를 스폰합니다.
-    /// </summary>
-    public GameObject SpawnAtNextPoint(MonsterDataSO monsterData)
-    {
-        Vector3 spawnPosition = GetNextSpawnPosition();
-        return SpawnMonster(monsterData, spawnPosition);
-    }
-
-    /// <summary>
-    /// 스폰 포인트를 사용하여 인덱스로 몬스터를 스폰합니다.
-    /// </summary>
-    public GameObject SpawnMonsterByIndexAtNextPoint(int index)
-    {
-        if (_monsterTypes == null || index < 0 || index >= _monsterTypes.Length)
-        {
-            Debug.LogError($"[MonsterSpawner] Invalid monster index: {index}");
-            return null;
-        }
-
-        Vector3 spawnPosition = GetNextSpawnPosition();
-        return SpawnMonster(_monsterTypes[index], spawnPosition);
-    }
-
-    /// <summary>
-    /// 스폰 포인트를 사용하여 랜덤 몬스터를 스폰합니다.
-    /// </summary>
-    public GameObject SpawnRandomMonsterAtNextPoint()
-    {
-        if (_monsterTypes == null || _monsterTypes.Length == 0)
-        {
-            Debug.LogError("[MonsterSpawner] No monster types assigned!");
-            return null;
-        }
-
-        Vector3 spawnPosition = GetNextSpawnPosition();
-        int randomIndex = Random.Range(0, _monsterTypes.Length);
-        return SpawnMonster(_monsterTypes[randomIndex], spawnPosition);
-    }
-
-#if UNITY_EDITOR
-    private void OnDrawGizmosSelected()
-    {
-        // 스폰 포인트 시각화
-        if (_spawnPoints == null || _spawnPoints.Length == 0)
-        {
-            // 스폰 포인트가 없으면 현재 오브젝트 위치 표시
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, 0.5f);
-            return;
-        }
-
-        // 각 스폰 포인트 표시
-        for (int i = 0; i < _spawnPoints.Length; i++)
-        {
-            if (_spawnPoints[i] == null) continue;
-
-            // 스폰 포인트 구체
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(_spawnPoints[i].position, 0.5f);
-
-            // 방향 표시 (화살표)
-            Gizmos.color = Color.red;
-            Vector3 forward = _spawnPoints[i].forward;
-            Gizmos.DrawRay(_spawnPoints[i].position, forward * 1.5f);
-
-            // 번호 표시를 위한 라벨 (Scene View에서만 보임)
-#if UNITY_EDITOR
-            UnityEditor.Handles.Label(
-                _spawnPoints[i].position + Vector3.up * 0.7f,
-                $"Spawn {i}",
-                new GUIStyle()
-                {
-                    normal = new GUIStyleState() { textColor = Color.white },
-                    fontSize = 12,
-                    fontStyle = FontStyle.Bold
-                }
-            );
-#endif
-        }
-    }
-#endif
 }

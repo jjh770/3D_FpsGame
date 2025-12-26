@@ -130,6 +130,7 @@ public class CoinGain : MonoBehaviour
         // 도착 체크 (t가 1에 도달하면 제거)
         if (t >= 1f)
         {
+            CoinManager.Instance.AddCoin(1);  // 코인 카운트 증가
             coin.OnDespawn();
             coin.gameObject.SetActive(false);
             _coinDataMap.Remove(coin);  // Dictionary에서 제거

@@ -9,6 +9,8 @@ public class MonsterPatrol : MonoBehaviour
     private Vector3 _spawnPosition;
     private int _currentWaypointIndex = 0;
     private bool _isReturningToSpawn = false;
+    private bool _hasReachedCurrentDestination = false; // 현재 목적지 도착 여부
+    private Vector3 _previousDestination; // 이전 목적지 (플래그 리셋용)
 
     public event Action OnPatrolCycleComplete; // 한 사이클 완료 시 (스폰 위치 도착)
 
@@ -24,18 +26,30 @@ public class MonsterPatrol : MonoBehaviour
 
     public Vector3 GetCurrentDestination()
     {
+        Vector3 destination;
+
         if (_isReturningToSpawn)
         {
-            return _spawnPosition;
+            destination = _spawnPosition;
         }
-
-        if (_patrolPath == null || _currentWaypointIndex >= _patrolPath.WaypointCount)
+        else if (_patrolPath == null || _currentWaypointIndex >= _patrolPath.WaypointCount)
         {
             Debug.LogError($"{gameObject.name} - 유효하지 않은 패트롤 경로 또는 인덱스: {_currentWaypointIndex}");
-            return _spawnPosition;
+            destination = _spawnPosition;
+        }
+        else
+        {
+            destination = _patrolPath.GetWaypoint(_currentWaypointIndex);
         }
 
-        return _patrolPath.GetWaypoint(_currentWaypointIndex);
+        // 목적지가 변경되면 도착 플래그 리셋
+        if (destination != _previousDestination)
+        {
+            _hasReachedCurrentDestination = false;
+            _previousDestination = destination;
+        }
+
+        return destination;
     }
 
     public bool CheckDestinationReached(Vector3 currentPosition, float waypointThreshold = 0.5f, float spawnThreshold = 1f)
@@ -51,6 +65,12 @@ public class MonsterPatrol : MonoBehaviour
 
     public void OnDestinationReached()
     {
+        // 이미 이 목적지에 도착 처리했으면 무시
+        if (_hasReachedCurrentDestination)
+            return;
+
+        _hasReachedCurrentDestination = true;
+
         if (_isReturningToSpawn)
         {
             // 스폰 위치 도착 - 사이클 완료
@@ -72,13 +92,54 @@ public class MonsterPatrol : MonoBehaviour
                 _isReturningToSpawn = true;
             }
         }
+
+        // 플래그는 GetCurrentDestination()에서 목적지가 변경될 때 자동으로 리셋됨
     }
 
     public void ResetPatrol()
     {
-        _currentWaypointIndex = 0;
         _isReturningToSpawn = false;
-        Debug.Log($"{gameObject.name} - 패트롤 리셋");
+        _hasReachedCurrentDestination = false;
+
+        // WayPoint0에 이미 있으므로 WayPoint1부터 다시 시작
+        // (WayPoint가 1개만 있으면 0으로)
+        _currentWaypointIndex = _patrolPath != null && _patrolPath.WaypointCount > 1 ? 1 : 0;
+
+        Debug.Log($"{gameObject.name} - 패트롤 리셋 (다음 목적지: WayPoint{_currentWaypointIndex})");
+    }
+
+    /// <summary>
+    /// 패트롤 경로를 설정하고 스폰 위치를 업데이트합니다.
+    /// </summary>
+    public void SetPatrolPath(PatrolPathSO patrolPath)
+    {
+        _patrolPath = patrolPath;
+        _isReturningToSpawn = false;
+
+        // 스폰 위치를 첫 번째 웨이포인트로 설정
+        if (_patrolPath != null && _patrolPath.WaypointCount > 0)
+        {
+            _spawnPosition = _patrolPath.GetWaypoint(0);
+
+            // NavMeshAgent가 있으면 Warp 사용, 없으면 직접 위치 설정
+            UnityEngine.AI.NavMeshAgent agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+            if (agent != null)
+            {
+                agent.Warp(_spawnPosition);
+            }
+            else
+            {
+                transform.position = _spawnPosition;
+            }
+
+            // WayPoint0에 스폰했으므로, 다음 목적지는 WayPoint1부터 시작
+            // (WayPoint가 1개만 있으면 0으로, 2개 이상이면 1로 설정)
+            _currentWaypointIndex = _patrolPath.WaypointCount > 1 ? 1 : 0;
+        }
+        else
+        {
+            _currentWaypointIndex = 0;
+        }
     }
 
     // Gizmo로 패트롤 경로 시각화

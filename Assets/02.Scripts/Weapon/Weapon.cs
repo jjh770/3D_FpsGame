@@ -66,6 +66,15 @@ public class Weapon : MonoBehaviour, IWeapon
         }
     }
 
+    private void LateUpdate()
+    {
+        // FireTransform을 카메라 회전과 동기화
+        if (_fireTransform != null && _mainCamera != null)
+        {
+            _fireTransform.rotation = _mainCamera.transform.rotation;
+        }
+    }
+
     private void PrewarmMuzzleFlash()
     {
         if (_muzzleFlashPrefabs.Length == 0) return;
@@ -173,15 +182,8 @@ public class Weapon : MonoBehaviour, IWeapon
         // 최대 사거리 제한
         bool isHit = Physics.Raycast(ray, out hitInfo, _weaponData.MaxRange);
 
-        // 시작점과 끝점 계산
-        Vector3 startPoint = _fireTransform.position;
-        Vector3 endPoint;
-
         if (isHit)
         {
-            // 맞았으면 히트 지점까지
-            endPoint = hitInfo.point;
-
             // 충돌했다면 피격 이펙트 표시
             _hitEffectVFX.transform.position = hitInfo.point;
             _hitEffectVFX.transform.forward = hitInfo.normal;
@@ -206,20 +208,20 @@ public class Weapon : MonoBehaviour, IWeapon
                 }
             }
         }
-        else
-        {
-            endPoint = ray.origin + ray.direction * _weaponData.MaxRange;
-        }
-        CreateTracer(startPoint, endPoint);
+        Vector3 endPoint = isHit ? hitInfo.point : ray.origin + ray.direction * _weaponData.MaxRange;
+        CreateTracer(endPoint);
     }
 
-    private void CreateTracer(Vector3 start, Vector3 end)
+    private void CreateTracer(Vector3 end)
     {
         if (_tracerPrefab == null) return;
 
+        // FireTransform(총구) 위치를 시작점으로 사용
+        Vector3 start = _fireTransform.position;
+
         GameObject tracerObj = ObjectPool.Instance.Spawn(
             _tracerPrefab.gameObject,
-            Vector3.zero,
+            start,
             Quaternion.identity
         );
 

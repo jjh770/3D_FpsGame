@@ -45,9 +45,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dc36453f3d89e3478eb72bbe46dd232, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spreadForce: 5
-  upwardForce: 8
-  randomTorque: 10
+  _spreadForce: 0
+  _upwardForce: 0
+  _randomTorque: 0
 --- !u!1 &1667978803413412
 GameObject:
   m_ObjectHideFlags: 0
@@ -64,7 +64,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 1
   m_IsActive: 1
 --- !u!4 &4271735776560842
 Transform:

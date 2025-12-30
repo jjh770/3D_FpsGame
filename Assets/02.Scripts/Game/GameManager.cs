@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
     }
     public void Restart()
     {
-        LockCursor();
+        UnlockCursor();
         Time.timeScale = 1f;
         SceneManager.LoadScene(0);
     }
@@ -132,6 +132,15 @@ public class GameManager : MonoBehaviour
     private void HandlePlayerDeath()
     {
         SetState(EGameState.GameOver);
+    }
+
+    private void OnDestroy()
+    {
+        if (_player != null)
+        {
+            _player.OnPlayerDeathComplete -= HandlePlayerDeath;
+        }
+        UnlockCursor();
     }
 
     private void LockCursor()

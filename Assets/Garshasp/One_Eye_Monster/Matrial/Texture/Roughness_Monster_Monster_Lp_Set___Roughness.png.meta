@@ -1,5 +1,12 @@
 fileFormatVersion: 2
 guid: e697a3546a4c4fb47901f0d187fc9262
+AssetOrigin:
+  serializedVersion: 1
+  productId: 274888
+  packageName: One_Eye_Monster
+  packageVersion: 1.0
+  assetPath: Assets/Garshasp/One_Eye_Monster/Matrial/Texture/Roughness_Monster_Monster_Lp_Set___Roughness.png
+  uploadId: 758064
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -69,7 +76,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -115,10 +122,3 @@ TextureImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 274888
-  packageName: One_Eye_Monster
-  packageVersion: 1.0
-  assetPath: Assets/Garshasp/One_Eye_Monster/Matrial/Texture/Roughness_Monster_Monster_Lp_Set___Roughness.png
-  uploadId: 758064
